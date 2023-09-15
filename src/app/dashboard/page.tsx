@@ -1,9 +1,15 @@
 import React from 'react'
 import Button from '../../components/UI/Button'
+import { authOptions } from '@/lib/auth'
+import { getServerSession } from 'next-auth'
+const page = async ({ }) => {
 
-const page = () => {
+    const session = getServerSession(authOptions)
     return (
-        <Button>Hello</Button>
+        <>
+            <Button variant={"ghost"}>Hello </Button>
+            {JSON.stringify(session)}
+        </>
     )
 }
 

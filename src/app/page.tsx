@@ -1,4 +1,5 @@
 import connectDB from "@/lib/dbConnection"
+import Page from "./login/page";
 
 export default async function Home() {
   await connectDB().then(res => {
@@ -7,6 +8,6 @@ export default async function Home() {
     console.log(err)
   })
   return (
-    <> hii</>
+    <> <Page /></>
   )
 }
