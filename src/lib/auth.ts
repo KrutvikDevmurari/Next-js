@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "./dbConnection";
 import bcrypt from 'bcrypt';
 import GoogleProvider from "next-auth/providers/google";
+import User from "@/models/user";
+
 
 const getGoogleCredentials = () => {
     const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -27,21 +29,33 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async jwt({ token, user }) {
             const client = await connectDB();
-            console.log(client, "client")
-            const email = user.email;
+            const email = token.email;
             const usersCollection = client.connection.db
                 .collection("users");
-            const dbUser = await usersCollection.findOne({ email });
+            const dbUser = await User.findOne({ email: email });
             if (!dbUser) {
-                token.id = user!.id
+                const newUser = await User.create({
+                    name: token.name,
+                    email: token.email,
+                    image: token.picture,
+                    requests: [],
+                    friends: []
+
+                });
+                await newUser.save();
+                token.id = user?.id
                 return token
             }
             return {
-                id: dbUser.id,
+                id: dbUser._id,
                 name: dbUser.name,
                 email: dbUser.email,
-                picture: dbUser.image
+                picture: dbUser.image,
+                requests: dbUser.requests,
+                friends: dbUser.friends
             }
+
+
         },
         async session({ session, token }) {
             if (token) {
@@ -49,11 +63,13 @@ export const authOptions: NextAuthOptions = {
                 session.user.name = token.name
                 session.user.email = token.email
                 session.user.image = token.picture
+                session.user.requests = token.requests
+                session.user.friends = token.friends
             }
             return session
         },
         redirect() {
-            return '/dashboard'
+            return '/dashboard/add'
         }
     },
     providers: [

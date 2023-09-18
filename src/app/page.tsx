@@ -1,5 +1,5 @@
 import connectDB from "@/lib/dbConnection"
-import Page from "./login/page";
+import Page from "./(auth)/login/page";
 
 export default async function Home() {
   await connectDB().then(res => {
