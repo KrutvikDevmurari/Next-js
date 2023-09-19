@@ -1,7 +1,7 @@
 // addFriendController.ts
 import { NextResponse } from 'next/server';
 import { addFriendValidator } from '@/lib/validations/add-friend';
-import { getUserByEmail, updateUserFriendRequests, removeUserFriendRequest, addUserFriend } from './usermodel'; // Import necessary functions
+import { getUserByEmail, updateUserFriendRequests, removeUserFriendRequest } from './usermodel'; // Import necessary functions
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
 
@@ -28,8 +28,7 @@ export const addFriendController = async (req: Request) => {
         }
 
         // Check if a friend request already exists
-        const existingRequest = session.user.friends.find((request: { userId: string }) => request.userId === user._id);
-
+        const existingRequest = user.requests.find((request: { userId: any; }) => request.userId.toString() === session.user.id.toString());
         if (existingRequest) {
             if (existingRequest.userApproved) {
                 await removeUserFriendRequest(session.user.id, user._id);
@@ -39,7 +38,11 @@ export const addFriendController = async (req: Request) => {
                 return NextResponse.json({ message: 'Friend request already sent', success: false }, { status: 400 });
             }
         }
-
+        const existingFriend = user.friends.find((request: { userId: any; }) => request.userId.toString() === session.user.id.toString());
+        if (existingFriend) {
+            return NextResponse.json({ message: 'You are already Friends!!', success: false }, { status: 400 });
+        }
+        console.log(session.user.id, user._id, "session.user.id, user._id")
         // Send a friend request
         await updateUserFriendRequests(user._id, session.user.id);
 

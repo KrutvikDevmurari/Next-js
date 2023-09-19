@@ -37,10 +37,9 @@ const Layout = async ({ children }: LayoutProps) => {
     if (!session) notFound()
 
     const friends = await getUserById(session.user.id)
-    console.log('friends', friends)
 
     const unseenRequestCount = session.user.requests.length
-
+    const sessionId = session.user.id
     return (
         <div className='w-full flex h-screen'>
             <div className='md:hidden'>
@@ -93,7 +92,7 @@ const Layout = async ({ children }: LayoutProps) => {
 
                                 <li>
                                     <FriendRequestSidebarOptions
-                                        sessionId={session.user.id}
+                                        sessionId={sessionId}
                                         initialUnseenRequestCount={unseenRequestCount}
                                     />
                                 </li>

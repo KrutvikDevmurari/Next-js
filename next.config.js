@@ -7,5 +7,10 @@ const nextConfig = {
         domains: ['lh3.googleusercontent.com']
     }
 }
-
+module.exports = {
+    api: {
+        bodyParser: false,
+        routes: ['/api/socket'],
+    },
+};
 module.exports = nextConfig

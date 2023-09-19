@@ -25,13 +25,11 @@ const FriendRequests: FC<FriendRequestsProps> = ({
     //     pusherClient.subscribe(
     //         toPusherKey(`user:${sessionId}:incoming_friend_requests`)
     //     )
-    //     console.log("listening to ", `user:${sessionId}:incoming_friend_requests`)
 
     //     const friendRequestHandler = ({
     //         id,
     //         email,
     //     }: IncomingFriendRequest) => {
-    //         console.log("function got called")
     //         setFriendRequests((prev) => [...prev, { id, email }])
     //     }
 
@@ -55,13 +53,13 @@ const FriendRequests: FC<FriendRequestsProps> = ({
     }
 
     const denyFriend = async (senderId: string) => {
-        await axios.post('/api/friends/den', { id: senderId })
+        await axios.post('/api/friends/delete', { id: senderId })
         setFriendRequests((prev) =>
             prev.filter((request) => request.id !== senderId)
         )
         router.refresh()
     }
-
+    console.log("friendRequests", friendRequests);
     return (
         <>
             {friendRequests.length === 0 ? (
