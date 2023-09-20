@@ -8,13 +8,43 @@ export const getUserByEmail = async (email: String) => {
 
 export const getUserById = async (id: String) => {
     try {
-        return User.findOne({ _id: id });
+        const user = await User.findOne({ _id: id });
+        return user;
     } catch (err) {
-        console.log(err)
-        return null
+        console.log(err);
+        return null;
     }
-
 };
+export const getSomeUserById = async (id: String) => {
+    try {
+        const user = await User.findOne({ _id: id }).select('email name _id image');;
+        return user;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+};
+
+export const getUserfromSession = async (session: any) => {
+    try {
+        const friends = session.user.friends;
+        const friendsdata = await Promise.all(friends.map(async (res: any) => {
+            const id = res.userId;
+            try {
+                const user = await User.findOne({ _id: id }).select('email name _id image');
+                return user;
+            } catch (error) {
+                console.error(`Error fetching user with ID ${id}: ${error}`);
+                return null; // or handle the error in an appropriate way
+            }
+        }));
+        return friendsdata || [];
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+};
+
 // Update user's friend requests
 export const updateUserFriendRequests = async (userId: String, friendId: String) => {
     return User.updateOne(

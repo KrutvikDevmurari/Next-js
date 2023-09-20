@@ -14,7 +14,6 @@ export const confirmFriendRequestController = async (req: Request) => {
 
         } else {
             const userID = await session.user.id   
-            console.log(userID, friendId, "Iddds") 
             // Confirm the friend request
             const confirm = await confirmFriendRequest(userID, friendId);
             const removerequest = await removeUserFriendRequest(userID, friendId)

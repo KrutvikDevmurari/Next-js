@@ -1,5 +1,6 @@
-import Providers from '@/components/UI/providers'
+import Providers from '@/components/providers'
 import './globals.css'
+import { SocketProvider } from '@/components/socketProvider'
 
 // Done after the video and optional: add page metadata
 export const metadata = {
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>
-        <Providers>{children}</Providers>
+        {/* <SocketProvider> */}
+          <Providers>{children}</Providers>
+        {/* </SocketProvider> */}
       </body>
     </html>
   )

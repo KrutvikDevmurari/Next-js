@@ -1,21 +1,34 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import io from 'socket.io';
+import { Server } from "socket.io";
 
-export default async function socket(req: NextApiRequest, res: NextApiResponse) {
-    // Create a Socket.IO server
-    const server = io(res.socket, { serveClient: false });
+export async function GET(req: NextApiRequest, res: any) {
+    // Change the HTTP method to GET
+    // req.method = "GET";
 
-    // Listen for new connections
-    server.on('connection', (socket: { on: (arg0: string, arg1: (message: any) => void) => void; }) => {
-        // Handle events from the client
-        socket.on('message', (message) => {
-            // Broadcast the message to all other clients
-            server.emit('message', message);
+    // Create a new socket.io server
+    const io = new Server(res.socket.server);
+
+    // Event handler for client connections
+    io.on("connection", (socket) => {
+        const clientId = socket.id;
+        console.log("A client connected.");
+        console.log(`A client connected. ID: ${clientId}`);
+        io.emit("client-new", clientId);
+
+        // Event handler for receiving messages from the client
+        socket.on("message", (data) => {
+            console.log("Received message:", data);
+        });
+
+        // Event handler for client disconnections
+        socket.on("disconnect", () => {
+            console.log("A client disconnected.");
         });
     });
 
-    // Close the Socket.IO server when the connection ends
-    res.on('close', () => {
-        server.close();
-    });
+    // Set the socket.io server on the response object
+    res.socket.server.io = io;
+
+    // End the response
+    res.end();
 }

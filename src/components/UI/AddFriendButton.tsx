@@ -26,7 +26,6 @@ const AddFriendButton: FC<AddFriendButtonProps> = ({ }) => {
 
     const addFriend = async (email: string) => {
         try {
-
             await axios.post('/api/friends/add', {
                 email,
             })

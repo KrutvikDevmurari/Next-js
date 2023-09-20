@@ -3,10 +3,9 @@ import mongoose from 'mongoose';
 
 const MessageSchema = new mongoose.Schema({
     senderId: { type: String, required: true },
-    receiverId: { type: String, required: true, unique: true },
+    receiverId: { type: String, required: true },
     text: { type: String },
     timestamp: { type: Number },
-
 });
 
 

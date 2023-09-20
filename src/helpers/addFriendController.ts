@@ -42,7 +42,6 @@ export const addFriendController = async (req: Request) => {
         if (existingFriend) {
             return NextResponse.json({ message: 'You are already Friends!!', success: false }, { status: 400 });
         }
-        console.log(session.user.id, user._id, "session.user.id, user._id")
         // Send a friend request
         await updateUserFriendRequests(user._id, session.user.id);
 
