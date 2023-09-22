@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
+const withPWA = require("next-pwa");
 const nextConfig = {
-    experimental: {
-        appDir: true,
-    },
+
     images: {
         domains: ['lh3.googleusercontent.com']
     }
@@ -13,4 +12,11 @@ module.exports = {
         routes: ['/api/socket'],
     },
 };
+module.exports = withPWA({
+    pwa: {
+        dest: "public",
+        register: true,
+        skipWaiting: true,
+    },
+});
 module.exports = nextConfig

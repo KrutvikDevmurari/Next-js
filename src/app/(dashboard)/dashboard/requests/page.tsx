@@ -19,7 +19,6 @@ const page = async () => {
             email: sender?.email,
         })
     })
-    console.log(incomingSenderIds, "incomingSenderIds")
     return (
         <main className='pt-8'>
             <h1 className='font-bold text-5xl mb-8'>Add a friend</h1>

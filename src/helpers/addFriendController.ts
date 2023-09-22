@@ -4,6 +4,8 @@ import { addFriendValidator } from '@/lib/validations/add-friend';
 import { getUserByEmail, updateUserFriendRequests, removeUserFriendRequest } from './usermodel'; // Import necessary functions
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
+import { pusherServer } from '@/lib/pusher';
+import { toPusherKey } from '@/lib/utils';
 
 export const addFriendController = async (req: Request) => {
     try {
@@ -42,6 +44,17 @@ export const addFriendController = async (req: Request) => {
         if (existingFriend) {
             return NextResponse.json({ message: 'You are already Friends!!', success: false }, { status: 400 });
         }
+
+
+        await pusherServer.trigger(
+            toPusherKey(`user:${user._id}:incoming_friend_requests`),
+            'incoming_friend_requests',
+            {
+                id: session.user.id,
+                email: session.user.email,
+            }
+        )
+
         // Send a friend request
         await updateUserFriendRequests(user._id, session.user.id);
 

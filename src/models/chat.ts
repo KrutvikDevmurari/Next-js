@@ -3,7 +3,13 @@ import mongoose from 'mongoose';
 
 const ChatSchema = new mongoose.Schema({
     id: { type: String, required: true },
-    messages: { type: Array },
+    messages: [{
+        // Define the structure of each object in the 'messages' array
+        senderId: { type: String, required: true },
+        receiverId: { type: String, required: true },
+        text: { type: String, required: true },
+        timestamp: { type: Number, required: true },
+    }],
 });
 
 

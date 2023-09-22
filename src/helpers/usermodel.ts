@@ -1,4 +1,5 @@
 
+import Chat from '@/models/chat';
 import User from '../models/user';
 
 // Get user by email
@@ -24,6 +25,16 @@ export const getSomeUserById = async (id: String) => {
         return null;
     }
 };
+export async function getChatMessages(chatId: string) {
+    try {
+        const results: any = await Chat.findOne({ id: chatId })
+        const reversedDbMessages =results.messages.reverse()
+        return JSON.stringify(reversedDbMessages)
+    } catch (error) {
+        console.log("error", error)
+        // notFound()
+    }
+}
 
 export const getUserfromSession = async (session: any) => {
     try {
@@ -48,6 +59,7 @@ export const getUserfromSession = async (session: any) => {
 // Update user's friend requests
 export const updateUserFriendRequests = async (userId: String, friendId: String) => {
     return User.updateOne(
+        { "_id": userId },
         { $push: { requests: { userId: friendId, userApproved: false } } }
     );
 };
@@ -56,10 +68,16 @@ export const updateUserFriendRequests = async (userId: String, friendId: String)
 
 // Remove user's friend request
 export const removeUserFriendRequest = async (userId: String, friendId: String) => {
-    return User.updateOne(
-        { "_id": userId },
-        { $pull: { requests: { userId: friendId } } }
-    );
+    try {
+        const result = await User.updateOne(
+            { "_id": userId },
+            { $pull: { requests: { userId: friendId, userApproved: false } } }
+        );
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw error; // Rethrow the error to handle it further up the call stack
+    }
 };
 
 
