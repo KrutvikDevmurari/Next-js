@@ -6,13 +6,13 @@ import { ButtonHTMLAttributes, FC, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Button from './Button'
 import { redirect } from 'next/navigation'
-
+import { useRouter } from 'next/navigation';
 
 interface SignOutButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> { }
 
 const SignOutButton: FC<SignOutButtonProps> = ({ ...props }) => {
     const [isSigningOut, setIsSigningOut] = useState<boolean>(false)
-
+    const router = useRouter()
     return (
         <Button
             {...props}
@@ -20,10 +20,11 @@ const SignOutButton: FC<SignOutButtonProps> = ({ ...props }) => {
             onClick={async () => {
                 setIsSigningOut(true)
                 try {
-                    await signOut({ callbackUrl: 'http://localhost:3000/signout' })
+                    router.push("/")
+                    await signOut({ redirect: false, callbackUrl: 'http://localhost:3000/' })
                     redirect('/signout')
                 } catch (error) {
-                    toast.error('There was a problem signing out')
+                    // toast.error('There was a problem signing out')
                 } finally {
                     setIsSigningOut(false)
                 }
