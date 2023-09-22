@@ -28,7 +28,7 @@ export const getSomeUserById = async (id: String) => {
 export async function getChatMessages(chatId: string) {
     try {
         const results: any = await Chat.findOne({ id: chatId })
-        const reversedDbMessages =results.messages.reverse()
+        const reversedDbMessages = results.messages.reverse()
         return JSON.stringify(reversedDbMessages)
     } catch (error) {
         console.log("error", error)
@@ -49,7 +49,7 @@ export const getUserfromSession = async (session: any) => {
                 return null; // or handle the error in an appropriate way
             }
         }));
-        return friendsdata || [];
+        return JSON.stringify(friendsdata);
     } catch (err) {
         console.error(err);
         return null;

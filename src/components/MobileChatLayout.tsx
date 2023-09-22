@@ -75,7 +75,6 @@ const MobileChatLayout: FC<MobileChatLayoutProps> = ({ friends, session, sidebar
                                                 </div>
                                             </div>
                                             <div className='relative mt-6 flex-1 px-4 sm:px-6'>
-                                                {/* Content */}
 
                                                 {friends.length > 0 ? (
                                                     <div className='text-xs font-semibold leading-6 text-gray-400'>
@@ -158,7 +157,6 @@ const MobileChatLayout: FC<MobileChatLayoutProps> = ({ friends, session, sidebar
                                                     </ul>
                                                 </nav>
 
-                                                {/* content end */}
                                             </div>
                                         </div>
                                     </Dialog.Panel>

@@ -30,6 +30,7 @@ const sidebarOptions: SidebarOption[] = [
         Icon: 'UserPlus',
     },
 ]
+const sidebarOptions2 = JSON.parse(JSON.stringify(sidebarOptions))
 
 const Layout = async ({ children }: LayoutProps) => {
     const session = await getServerSession(authOptions)
@@ -37,16 +38,17 @@ const Layout = async ({ children }: LayoutProps) => {
 
     // const friends: User[] = [] // Assuming User is the type of user objects
 
-    const friends: any[] | null = await getUserfromSession(session)
-    const unseenRequestCount = session.user.requests.length
-    const sessionId = session.user.id
+    const friend: any = await getUserfromSession(session)
+    const friends = JSON.parse(friend)
+    const unseenRequestCount = JSON.parse(JSON.stringify(session.user.requests.length))
+    const sessionId = JSON.parse(JSON.stringify(session.user.id))
     return (
         <div className='w-full flex h-screen'>
             <div className='md:hidden'>
                 <MobileChatLayout
                     friends={friends}
-                    session={session}
-                    sidebarOptions={sidebarOptions}
+                    session={JSON.parse(JSON.stringify(session))}
+                    sidebarOptions={sidebarOptions2}
                     unseenRequestCount={unseenRequestCount}
                 />
             </div>
