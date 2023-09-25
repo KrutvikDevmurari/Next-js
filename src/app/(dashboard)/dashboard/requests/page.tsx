@@ -7,18 +7,15 @@ import { notFound } from 'next/navigation'
 const page = async () => {
     const session = await getServerSession(authOptions)
     if (!session) notFound()
-    const friendRequests: IncomingFriendRequest[] = []
     // ids of people who sent current logged in user a friend requests
     const incomingSenderIds = session.user.requests as any[]
-  
-    incomingSenderIds.map(async (res) => {
-        const senderId = res?.userId
-        const sender: any = await getUserById(senderId) as User
-        friendRequests.push({
-            id: senderId,
-            email: sender?.email,
-        })
-    })
+    const friendRequests = await Promise.all(incomingSenderIds.map(async (res) => {
+        const senderId = res?.userId;
+        const sender: any = await getUserById(senderId) as User;
+
+        return JSON.parse(JSON.stringify(sender))
+    }));
+
     return (
         <main className='pt-8'>
             <h1 className='font-bold text-5xl mb-8'>Add a friend</h1>

@@ -1,6 +1,6 @@
 // confirmFriendRequestController.ts
 import { NextResponse } from 'next/server';
-import { confirmFriendRequest, removeUserFriendRequest } from './usermodel'; // Import necessary function
+import { confirmFriendRequest, getUserfromSession, removeUserFriendRequest } from './usermodel'; // Import necessary function
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
@@ -13,7 +13,14 @@ export const confirmFriendRequestController = async (req: Request) => {
             return NextResponse.json({ message: 'User not Authorized ', success: false }, { status: 404 });
 
         } else {
-            const userID = await session.user.id   
+            const userID = await session.user.id
+            const friends: any = await getUserfromSession(session)
+            console.log(JSON.parse(friends), "friendssss")
+            const alreadyFriends = JSON.parse(friends).some((res: any) => res.userID === friendId)
+            if (alreadyFriends) {
+                return NextResponse.json({ message: 'Your are already friends...', success: false }, { status: 400 });
+            }
+            console.log(alreadyFriends, "alreadyFriends")
             // Confirm the friend request
             const confirm = await confirmFriendRequest(userID, friendId);
             const removerequest = await removeUserFriendRequest(userID, friendId)

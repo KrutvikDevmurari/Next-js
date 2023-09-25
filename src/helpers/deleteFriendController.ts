@@ -8,6 +8,7 @@ export const deleteFriendRequestController = async (req: Request) => {
     try {
         const body = await req.json();
         const { id } = body; // You may need to define a request body structure
+        console.log("body", body)
         const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ message: 'User not Authorized ', success: false }, { status: 404 });

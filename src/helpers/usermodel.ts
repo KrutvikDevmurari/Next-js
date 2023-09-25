@@ -68,10 +68,11 @@ export const updateUserFriendRequests = async (userId: String, friendId: String)
 
 // Remove user's friend request
 export const removeUserFriendRequest = async (userId: String, friendId: String) => {
+    console.log(friendId, "friendId")
     try {
         const result = await User.updateOne(
             { "_id": userId },
-            { $pull: { requests: { userId: friendId, userApproved: false } } }
+            { $pull: { requests: { userId : friendId, userApproved: false } } }
         );
         return result;
     } catch (error) {
@@ -104,9 +105,3 @@ export const confirmFriendRequest = async (userId: String, friendId: String) => 
     );
 };
 
-// Delete friend request
-export const deleteFriendRequest = async (userId: String, friendId: String) => {
-    return User.updateOne(
-        { $pull: { request: { userId: friendId } } }
-    );
-};
