@@ -16,9 +16,10 @@ const page = async ({ }) => {
     const friendsWithLastMessage = await Promise.all(
         friends.friends.map(async (friend: any) => {
             const friendid = friend.userId
-            const ChatId = `${session.user.id}--${friendid}`
+            const ChatId = chatHrefConstructor(session.user.id, friendid)
             const recentchats: any = await getChatMessages(ChatId)
-            const parsedchat = JSON.parse(recentchats).reverse()
+            console.log(recentchats,ChatId, "recentchasssssts")
+            const parsedchat = JSON.parse(recentchats ?? "").reverse()
             const lastMessage = parsedchat[parsedchat.length - 1]
             const friendsdata = await getUserById(friend.userId)
             console.log(friendsdata, "friendfriend")
