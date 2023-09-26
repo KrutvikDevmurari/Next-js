@@ -72,10 +72,10 @@ const FriendRequests: FC<FriendRequestsProps> = ({
     return (
         <>
             {friendRequests.length === 0 ? (
-                <p className='text-sm text-zinc-500'>Nothing to show here...</p>
+                <p className='text-sm text-zinc-500 pl-4'>Nothing to show here...</p>
             ) : (
                 friendRequests.map((request: any) => (
-                    <div key={request.id} className='flex gap-4 items-center'>
+                    <div key={request.id} className='flex gap-4 items-center pl-4'>
                         <UserPlus className='text-black' />
                         <p className='font-medium text-lg'>{request.email}</p>
                         {isLoading ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> :

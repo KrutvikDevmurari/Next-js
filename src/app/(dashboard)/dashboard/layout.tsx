@@ -43,7 +43,7 @@ const Layout = async ({ children }: LayoutProps) => {
     const unseenRequestCount = JSON.parse(JSON.stringify(session.user.requests.length))
     const sessionId = JSON.parse(JSON.stringify(session.user.id))
     return (
-        <div className='w-full flex h-screen'>
+        <div className='w-full flex h-screen container  px-16 py-12 '>
             <div className='md:hidden'>
                 <MobileChatLayout
                     friends={friends}
@@ -128,7 +128,7 @@ const Layout = async ({ children }: LayoutProps) => {
                 </nav>
             </div>
 
-            <aside className='max-h-screen container py-16 md:py-12 w-full'>
+            <aside className='max-h-screen  w-full bg-gray-200'>
                 {children}
             </aside>
         </div>

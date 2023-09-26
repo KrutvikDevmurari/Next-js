@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { confirmFriendRequest, getUserfromSession, removeUserFriendRequest } from './usermodel'; // Import necessary function
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { pusherServer } from '@/lib/pusher';
+import { toPusherKey } from '@/lib/utils';
 
 export const confirmFriendRequestController = async (req: Request) => {
     try {
@@ -24,6 +26,7 @@ export const confirmFriendRequestController = async (req: Request) => {
             // Confirm the friend request
             const confirm = await confirmFriendRequest(userID, friendId);
             const removerequest = await removeUserFriendRequest(userID, friendId)
+            pusherServer.trigger(toPusherKey(`user:${session.user.id}:friends`), `new_friend`, "")
             return NextResponse.json({ message: 'Friend request confirmed', success: true }, { status: 200 });
         }
     } catch (error) {

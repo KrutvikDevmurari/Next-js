@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
 import Message from '@/models/message'
 import Chat from '@/models/chat'
-import { pusherClient, pusherServer } from "@/lib/pusher"
+import { pusherServer } from "@/lib/pusher"
 import { toPusherKey } from "@/lib/utils"
 import { getSomeUserById } from "@/helpers/usermodel"
 
