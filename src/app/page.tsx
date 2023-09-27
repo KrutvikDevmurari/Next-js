@@ -7,6 +7,7 @@ export default async function Home() {
   }).catch(err => {
     console.log(err)
   })
+
   return (
     <> <Page /></>
   )

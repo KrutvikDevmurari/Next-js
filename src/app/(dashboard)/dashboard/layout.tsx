@@ -42,6 +42,7 @@ const Layout = async ({ children }: LayoutProps) => {
     const friends = JSON.parse(friend)
     const unseenRequestCount = JSON.parse(JSON.stringify(session.user.requests.length))
     const sessionId = JSON.parse(JSON.stringify(session.user.id))
+    const image = '/logomain.png'
     return (
         <div className='w-full flex h-screen container  px-16 py-12 '>
             <div className='md:hidden'>
@@ -55,7 +56,7 @@ const Layout = async ({ children }: LayoutProps) => {
 
             <div className='hidden md:flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6'>
                 <Link href='/dashboard' className='flex h-16 shrink-0 items-center'>
-                    <Icons.Logo className='h-8 w-auto text-indigo-600' />
+                    <Image src={image} alt="Friend Zone" width={100} height={100} />
                 </Link>
 
                 {friends !== null && (friends?.length > 0 ? (

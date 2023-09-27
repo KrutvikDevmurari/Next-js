@@ -48,7 +48,7 @@ const FriendRequests: FC<FriendRequestsProps> = ({
             prev.filter((request) => request.id !== senderId)
         )
         setIsLoading(true)
-        !isLoading && await axios.post('/api/friends/confirm', { id: senderId }).then(res => {
+        !isLoading && await axios.post('/api/friends/confirm', { id: senderId, cache: 'no-store' }).then(res => {
             setIsLoading(false)
             window.location.reload()
         })

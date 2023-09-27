@@ -16,8 +16,6 @@ interface ChatHeaderProps {
     initialMessages: any,
 }
 
-
-
 const ChatMain: FC<ChatHeaderProps> = ({ chatPartner, chatId, session, initialMessages }) => {
 
     const [typing, setTyping] = useState<boolean>(false)
@@ -96,7 +94,7 @@ const ChatMain: FC<ChatHeaderProps> = ({ chatPartner, chatId, session, initialMe
             sessionId={session.user.id}
             messages={messages}
         />
-        <ChatInput chatId={chatId} setInput={setInput} textareaRef={textareaRef} chatPartner={chatPartner} setTyping={setTyping} sendMessage={sendMessage} input={input} isLoading={isLoading} />
+        <ChatInput chatId={chatId} setInput={setInput} textareaRef={textareaRef} chatPartner={chatPartner} setTyping={setTyping} sendMessage={sendMessage} input={input} isLoading={isLoading} session={session} />
 
     </div>
 
