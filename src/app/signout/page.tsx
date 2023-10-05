@@ -3,8 +3,8 @@ import Cover from '@/components/demo'
 import { FC } from 'react'
 
 
-const page: FC = ({ }) => {
+const Page: FC = ({ }) => {
     return <Cover />
 }
 
-export default page
+export default Page

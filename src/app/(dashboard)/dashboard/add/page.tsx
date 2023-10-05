@@ -3,7 +3,7 @@ import AddFriendButton from '@/components/UI/AddFriendButton'
 import { pusherClient } from '@/lib/pusher';
 import { FC, useEffect, useState } from 'react'
 
-const page: FC = () => {
+const Page: FC = () => {
     useEffect(() => {
         const val = pusherClient.signin();
     }, [])
@@ -17,4 +17,4 @@ const page: FC = () => {
         </main>
     )
 }
-export default page
+export default Page
