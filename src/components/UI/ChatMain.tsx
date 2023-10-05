@@ -8,7 +8,6 @@ import { toPusherKey } from '@/lib/utils'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
-
 interface ChatHeaderProps {
     chatPartner: any,
     chatId: string,
@@ -84,7 +83,13 @@ const ChatMain: FC<ChatHeaderProps> = ({ chatPartner, chatId, session, initialMe
                     </div>
 
                     {/* <span className='text-sm text-gray-600'>{chatPartner.email}</span> */}
-                    {typing && <span className='text-sm text-gray-600'>typing...</span>}
+                    {typing && <span className='text-md text-gray-600'>typing <div className="rounded-lg inline-flex">
+                        <div className="flex items-center typing">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full mr-1 animate-typing-dot"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full mr-1 animate-typing-dot"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-typing-dot"></div>
+                        </div>
+                    </div></span>}
                 </div>
             </div>
         </div>

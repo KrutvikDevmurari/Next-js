@@ -3,10 +3,13 @@
 import { pusherClient } from '@/lib/pusher'
 import { chatHrefConstructor, toPusherKey } from '@/lib/utils'
 import { usePathname, useRouter } from 'next/navigation'
-import { FC, useEffect, useState } from 'react'
+import { FC, SetStateAction, useContext, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Image from 'next/image'
 import UnseenChatToast from './UnseenChatToast'
+import { Circle } from 'lucide-react'
+import { signIn } from 'next-auth/react'
+import { Channel, Members } from 'pusher-js'
 
 interface SidebarChatListProps {
     friends: any[] | null
@@ -23,10 +26,13 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
     const pathname = usePathname()
     const [unseenMessages, setUnseenMessages] = useState<Message[]>([])
     const [activeChats, setActiveChats] = useState<any>(friends)
-
+    const [userKeys, setUserKeys] = useState<any>([]);
+    // const user = useContext(UserContext);
     useEffect(() => {
         pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`))
         pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
+
+
         const newFriendHandler = (newFriend: User) => {
             setActiveChats((prev: any) => [...prev, newFriend])
         }
@@ -63,7 +69,7 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
             pusherClient.unbind('new_message', chatHandler)
             pusherClient.unbind('new_friend', newFriendHandler)
         }
-    }, [pathname, sessionId, router])
+    }, [pathname, sessionId, router, signIn])
 
     useEffect(() => {
         if (pathname?.includes('chat')) {
@@ -71,7 +77,42 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
                 return prev.filter((msg) => !pathname.includes(msg.senderId))
             })
         }
+
     }, [pathname])
+    useEffect(() => {
+        const channel = pusherClient.subscribe(`presence-online`);
+
+        // Function to handle member removal
+        const handleMemberRemoved = (member: { id: any }) => {
+            setUserKeys((prevUserKeys: any[]) => prevUserKeys.filter((key) => key !== member.id));
+        };
+
+        // Bind the event handlers
+        channel.bind("pusher:subscription_succeeded", (members: { each: (arg0: (member: any) => void) => void }) => {
+            // Initialize userKeys with the current member IDs
+            members.each((member) => {
+                // For example
+                setUserKeys((prevUserKeys: any) => [...prevUserKeys, member.id]);
+            });
+        });
+
+        channel.bind("pusher:member_added", (member: { id: any }) => {
+            // Add a new member to userKeys
+            setUserKeys((prevUserKeys: any) => [...prevUserKeys, member.id]);
+        });
+
+        channel.bind("pusher:member_removed", handleMemberRemoved);
+
+        // Cleanup function
+        return () => {
+            // Unbind event handlers
+            channel.unbind("pusher:member_removed", handleMemberRemoved);
+
+            // Unsubscribe from the channel when the component unmounts
+            pusherClient.unsubscribe(`presence-online`);
+        };
+    }, []);
+    console.log(userKeys, "userkeys")
     return (
         <ul role='list' className='max-h-[25rem] overflow-y-auto -mx-2 space-y-1'>
             {activeChats !== null && activeChats.sort().map((friend: any) => {
@@ -86,6 +127,8 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
                                 friend._id
                             )}`}
                             className='text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'>
+                            {userKeys.includes(friend._id) ? <Circle className='bg-green-400 border none text-green-400 rounded-full' width={15} height={15} /> : <Circle className='bg-red-400 border none text-red-400 rounded-full' width={15} height={15} />}
+
                             <Image src={friend.image?.includes("http") ? friend.image : `/uploads/profiles/${friend.image}`} alt="Friend Zone" width={25} height={25} className='rounded-full' />{friend.name}
                             {unseenMessagesCount > 0 ? (
                                 <div className='bg-indigo-600 font-medium text-xs text-white w-4 h-4 rounded-full flex justify-center items-center'>

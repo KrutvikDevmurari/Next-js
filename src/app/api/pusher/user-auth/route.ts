@@ -9,7 +9,6 @@ export async function POST(req: NextRequest, res: any) {
     try {
         const body = await req.formData();
         const socketId = body.get('socket_id');
-        const channelName = body.get('channel_name')?.toString();
         const session: any = await getServerSession(authOptions);
         const user = {
             id: session.user.id.toString(),
@@ -27,7 +26,6 @@ export async function POST(req: NextRequest, res: any) {
         };
         console.log(req, user, "usersocket")
         const authResponse = pusherServer.authenticateUser(socketId as string, user);
-        const authChannel = pusherServer.authorizeChannel(socketId as string, channelName as string, userData);
 
 
         // Set CORS headers

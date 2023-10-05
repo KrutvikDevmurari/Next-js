@@ -1,13 +1,14 @@
 "use client"
 import AddFriendButton from '@/components/UI/AddFriendButton'
 import { pusherClient } from '@/lib/pusher';
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 
-const page: FC =  () => {
-    // const api =  await fetch('/pusher/api')
+const page: FC = () => {
     useEffect(() => {
         const val = pusherClient.signin();
     }, [])
+
+
 
     return (
         <main className='pt-8'>
@@ -16,5 +17,4 @@ const page: FC =  () => {
         </main>
     )
 }
-
 export default page

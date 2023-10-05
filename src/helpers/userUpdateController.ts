@@ -30,18 +30,22 @@ export const userUpdateController = async (req: any) => {
         const originalFileName = uuidv4() + (file ? file.name : ''); // Generate a unique filename if a file is provided
         const filePath = path.join(uploadDir, originalFileName);
         if (file && file.name) {
-            if (file.type.includes("jpg") || file.type.includes("png")) {
-                const fileBuffer = await file.arrayBuffer();
-                const fileData = Buffer.from(fileBuffer);
-                await fs.writeFile(filePath, fileData);
-            } else {
-                return NextResponse.json({ message: 'Please provide a valid image here', success: false }, { status: 422 });
+            console.log(file.name, "file.name")
+            if (!file.name.includes("http")) {
+                if (file.type.includes("jpg") || file.type.includes("png")) {
+                    const fileBuffer = await file.arrayBuffer();
+                    const fileData = Buffer.from(fileBuffer);
+                    await fs.writeFile(filePath, fileData);
+                    await User.findByIdAndUpdate(_id, { name, email, image: originalFileName });
+
+                } else {
+
+                    return NextResponse.json({ message: 'Please provide a valid image here', success: false }, { status: 422 });
+                }
             }
-
         }
-
+        await User.findByIdAndUpdate(_id, { name, email });
         // Update user data (name and email)
-        await User.findByIdAndUpdate(_id, { name, email, image: originalFileName });
 
         return NextResponse.json({ message: 'User Updated Successfully', success: true }, { status: 200 });
     } catch (error: any) {

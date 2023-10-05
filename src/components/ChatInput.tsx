@@ -47,7 +47,6 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId, setTyping, input, 
         });
 
         pusherClient.bind("client-typing", (data: any) => {
-            console.log("typingg", data)
             const { typing } = data;
             if (chatPartnerId !== session.user.id) {
                 setTyping(true);

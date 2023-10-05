@@ -1,3 +1,4 @@
+"use client"
 import Cover from '@/components/demo'
 import { FC } from 'react'
 
