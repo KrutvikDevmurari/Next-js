@@ -69,7 +69,7 @@ const ChatMain: FC<ChatHeaderProps> = ({ chatPartner, chatId, session, initialMe
                         <Image
                             fill
                             referrerPolicy='no-referrer'
-                            src={chatPartner.image}
+                            src={chatPartner.image.includes("http") ? chatPartner.image : `/uploads/profiles/${chatPartner.image}`}
                             alt={`${chatPartner.name} profile picture`}
                             className='rounded-full ml-2'
                         />

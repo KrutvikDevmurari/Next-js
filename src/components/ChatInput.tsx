@@ -1,12 +1,8 @@
 'use client'
-
-import axios from 'axios'
-import { FC, useEffect, useRef, useState } from 'react'
-import { toast } from 'react-hot-toast'
+import { FC, useEffect } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import Button from '../components/UI/Button'
 import { Icons } from './UI/Icons'
-import { toPusherKey } from '@/lib/utils'
 import { pusherClient } from '@/lib/pusher'
 
 interface ChatInputProps {
@@ -24,29 +20,51 @@ interface ChatInputProps {
 const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId, setTyping, input, sendMessage, isLoading, textareaRef, setInput, session }) => {
     const [userId1, userId2] = chatId.split('--')
     const chatPartnerId = session.user.id === userId1 ? userId2 : userId1
+    const channel: any = pusherClient.subscribe(`presence-users-${session.user._id}`);
     useEffect(() => {
-        // Listen for typing events from Pusher
-        const channel = pusherClient.subscribe("typing-channel");
-
-        pusherClient.bind("pusher:subscription_succeeded", () => {
+        channel.bind("pusher:subscription_succeeded", (members: any) => {
             console.log("sucess")
-            var triggered = channel.trigger("typing", {
-                your: "data",
-            });
-            console.log("triggered", triggered);
+            var me = channel.members.me;
+            var userId = me.id;
+            var userInfo = me.info;
+            console.log("triggered", userId, userInfo);
+        });
+        var triggered = channel.trigger("client-typing", {
+            your: true,
         });
 
-        pusherClient.bind("typing", (data: any) => {
+        channel.bind("pusher:subscription_error", (error: any) => {
+            var { status } = error;
+            if (status == 408 || status == 503) {
+                // Retry?
+                console.log("error", error)
+            }
+            console.log("error", error)
+        });
+        channel.bind("pusher:subscription_count", (data: { subscription_count: any }) => {
+            console.log(data.subscription_count, "count");
+            console.log(channel.subscription_count);
+        });
+
+        pusherClient.bind("client-typing", (data: any) => {
+            console.log("typingg", data)
             const { typing } = data;
-            setTyping(typing); // Set setTyping to true when typing starts
+            if (chatPartnerId !== session.user.id) {
+                setTyping(true);
+                setTimeout(() => {
+                    setTyping(false)
+                }, 5000);
+            }
         });
-
         return () => {
             // Unsubscribe from the channel when the component unmounts
-            pusherClient.unbind();
+            pusherClient.unbind("client-typing", (data: any) => {
+                console.log("typingg", data)
+                const { typing } = data;
+                setTyping(false);
+            });
         };
     }, [input]);
-
 
     return (
         <div>

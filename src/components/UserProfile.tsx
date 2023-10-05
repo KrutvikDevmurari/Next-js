@@ -1,8 +1,10 @@
 "use client"
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import Image from 'next/image';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import axios from 'axios';
+import Button from './UI/Button';
 
 interface FormData {
     image: File | null;
@@ -11,11 +13,13 @@ interface FormData {
 }
 
 const UserProfile: any = ({ session }: any) => {
-    const [formData, setFormData] = useState<FormData>({
-        image: null,
-        name: "Apple iMac 27\"",
-        email: "example@example.com",
+    const [formData, setFormData]: any = useState<FormData>({
+        image: session.user.image,
+        name: session.user.name,
+        email: session.user.email,
     });
+    const [image, setImage] = useState(session.user.image)
+    const [isloading, setIsloading] = useState(false)
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -27,26 +31,40 @@ const UserProfile: any = ({ session }: any) => {
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const imageFile = e.target.files ? e.target.files[0] : null;
+        const imageFile2 = e.target.files ? URL.createObjectURL(e.target.files[0]) : null;
         setFormData({
             ...formData,
-            image: imageFile,
+            image: imageFile as File,
         });
+        setImage(imageFile2)
     };
-    const handleSubmit = (e: FormEvent) => {
+    console.log(image, "image")
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        // You can do something with the form data here, like sending it to an API
-        console.log(formData);
+        setIsloading(true)
+        const formDataToSend = new FormData();
+        formDataToSend.append('image', session.user.image === formData.image ? null : formData.image);
+        formDataToSend.append('name', formData.name);
+        formDataToSend.append('email', formData.email);
+        axios.post('/api/user/update', formDataToSend).then(res => {
+            setIsloading(false)
+        }).catch(err => {
+            setIsloading(false)
+        })
     };
+
 
     return (
         <section className="bg-white dark:bg-gray-900">
             <div className="max-w-2xl px-4 py-8 mx-auto lg:py-16">
                 <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Update User</h2>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} encType='multipart/form-data' >
                     <div className="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
                         <div className="sm:col-span-2">
                             <div className="col-span-6 ml-2 sm:col-span-4 md:mr-3">
-                                <input type="file" className="hidden" id="fileInput" />
+                                <input type="file" className="hidden" name="image" id="fileInput" onChange={(e: any) => {
+                                    handleImageChange(e)
+                                }} />
 
                                 <label className="block text-gray-700 text-sm font-bold mb-2 text-center" >
                                     Profile Photo <span className="text-red-600"> </span>
@@ -55,7 +73,7 @@ const UserProfile: any = ({ session }: any) => {
                                 <div className="text-center">
                                     <div className="mt-2">
                                         <Image
-                                            src={session.user.image || ''}
+                                            src={image.includes("http") ? image : `/uploads/profiles/${image}`}
                                             alt=""
                                             className="w-40 h-40 m-auto rounded-full shadow"
                                             width={"50"}
@@ -66,7 +84,9 @@ const UserProfile: any = ({ session }: any) => {
                                         <span className="block w-40 h-40 rounded-full m-auto shadow" style={{ backgroundSize: "cover", backgroundRepeat: "no-repeat", backgroundPosition: "center center", backgroundImage: "" }}>
                                         </span>
                                     </div>
-                                    <button type="button" className={"inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-400 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out duration-150 mt-2 ml-3"} onClick={() => { document?.getElementById('fileInput')?.click() }}>
+                                    <button type="button" className={"inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-400 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out duration-150 mt-2 ml-3"} onClick={() => {
+                                        document?.getElementById('fileInput')?.click()
+                                    }}>
                                         Select New Photo
                                     </button>
                                 </div>
@@ -99,10 +119,10 @@ const UserProfile: any = ({ session }: any) => {
                             />
                         </div>
                     </div>
-                    <div className="flex items-center space-x-4">
-                        <button type="submit" className="text-white bg-teal-800 hover:bg-teal-950 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                    <div className="flex items-center space-x-4 justify-center">
+                        <Button type="submit" isLoading={isloading} className="text-white bg-teal-800 hover:bg-teal-950 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                             Update User
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

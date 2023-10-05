@@ -134,7 +134,7 @@ const MobileChatLayout: FC<MobileChatLayoutProps> = ({ friends, session, sidebar
                                                                         fill
                                                                         referrerPolicy='no-referrer'
                                                                         className='rounded-full'
-                                                                        src={session.user.image || ''}
+                                                                        src={`/uploads/profiles/${session.user.image}`|| ''}
                                                                         alt='Your profile picture'
                                                                     />
                                                                 </div>

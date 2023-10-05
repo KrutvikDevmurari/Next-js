@@ -1,8 +1,9 @@
+import Cover from '@/components/demo'
 import { FC } from 'react'
 
 
 const page: FC = ({ }) => {
-    return <div>Sign Out</div>
+    return <Cover />
 }
 
 export default page

@@ -4,6 +4,7 @@ import connectDB from "./dbConnection";
 import bcrypt from 'bcrypt';
 import GoogleProvider from "next-auth/providers/google";
 import User from "@/models/user";
+import { pusherClient } from "./pusher";
 
 
 const getGoogleCredentials = () => {

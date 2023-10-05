@@ -81,7 +81,7 @@ const Messages: FC<MessagesProps> = ({
                   'order-1': !isCurrentUser,
                   invisible: hasNextMessageFromSameUser,
                 })}>
-                <Image
+                {/* <Image
                   fill
                   src={
                     isCurrentUser ? (sessionImg as string) : chatPartner.image
@@ -89,7 +89,7 @@ const Messages: FC<MessagesProps> = ({
                   alt='Profile picture'
                   referrerPolicy='no-referrer'
                   className='rounded-full'
-                />
+                /> */}
               </div>
             </div>
           </div>

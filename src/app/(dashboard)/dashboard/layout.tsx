@@ -1,5 +1,5 @@
 import { Icon, Icons } from '@/components/UI/Icons'
-import SignOutButton from '@/components/UI/SignOutButton'
+
 import { authOptions } from '@/lib/auth'
 import { getServerSession } from 'next-auth'
 import Image from 'next/image'
@@ -11,6 +11,7 @@ import { SidebarOption } from '@/types/typings'
 import FriendRequestSidebarOptions from '@/components/FriendRequestSidebarOption'
 import SidebarChatList from '@/components/SideBarChatList'
 import MobileChatLayout from '@/components/MobileChatLayout'
+import UserProfileSidebar from '@/components/userProfileSidebar'
 
 interface LayoutProps {
     children: ReactNode
@@ -102,29 +103,7 @@ const Layout = async ({ children }: LayoutProps) => {
                             </ul>
                         </li>
 
-                        <li className='-mx-6 mt-auto flex items-center'>
-                            <div className='flex flex-1 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900'>
-                                <div className='relative h-8 w-8 bg-gray-50'>
-                                    <Image
-                                        fill
-                                        referrerPolicy='no-referrer'
-                                        className='rounded-full'
-                                        src={session.user.image || ''}
-                                        alt='Your profile picture'
-                                    />
-                                </div>
-
-                                <span className='sr-only'>Your profile</span>
-                                <div className='flex flex-col'>
-                                    <span aria-hidden='true' className='truncate max-w-[100px]'>{session.user.name}</span>
-                                    <span className='text-xs text-zinc-400 truncate max-w-[100px]' aria-hidden='true'>
-                                        {session.user.email}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <SignOutButton className='h-full aspect-square' />
-                        </li>
+                        <UserProfileSidebar session={JSON.parse(JSON.stringify(session))} />
                     </ul>
                 </nav>
             </div>

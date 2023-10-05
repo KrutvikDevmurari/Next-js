@@ -5,6 +5,8 @@ import { FC, useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
 import Image from 'next/image'
+// import Pusher from 'pusher'
+import { pusherClient } from '@/lib/pusher'
 
 const Page: FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -18,6 +20,7 @@ const Page: FC = () => {
             toast.error('Something went wrong with your login.')
         } finally {
             setIsLoading(false)
+          
         }
     }
 
