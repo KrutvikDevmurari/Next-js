@@ -53,7 +53,8 @@ export const authOptions: NextAuthOptions = {
                 email: dbUser.email,
                 picture: dbUser.image,
                 requests: dbUser.requests,
-                friends: dbUser.friends
+                friends: dbUser.friends,
+                group: dbUser.group
             }
 
 
@@ -66,6 +67,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.image = token.picture
                 session.user.requests = token.requests
                 session.user.friends = token.friends
+                session.user.group = token.group
             }
             return session
         },

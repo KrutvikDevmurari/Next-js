@@ -3,7 +3,7 @@
 import { pusherClient } from '@/lib/pusher'
 import { chatHrefConstructor, toPusherKey } from '@/lib/utils'
 import { usePathname, useRouter } from 'next/navigation'
-import { FC, SetStateAction, useContext, useEffect, useState } from 'react'
+import { FC, SetStateAction, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Image from 'next/image'
 import UnseenChatToast from './UnseenChatToast'
@@ -27,7 +27,6 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
     const [unseenMessages, setUnseenMessages] = useState<Message[]>([])
     const [activeChats, setActiveChats] = useState<any>(friends)
     const [userKeys, setUserKeys] = useState<any>([]);
-    // const user = useContext(UserContext);
     useEffect(() => {
         pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`))
         pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
@@ -112,7 +111,6 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
             pusherClient.unsubscribe(`presence-online`);
         };
     }, []);
-    console.log(userKeys, "userkeys")
     return (
         <ul role='list' className='max-h-[25rem] overflow-y-auto -mx-2 space-y-1'>
             {activeChats !== null && activeChats.sort().map((friend: any) => {
@@ -127,7 +125,7 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
                                 friend._id
                             )}`}
                             className='text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'>
-                            {userKeys.includes(friend._id) ? <Circle className='bg-green-400 border none text-green-400 rounded-full' width={15} height={15} /> : <Circle className='bg-red-400 border none text-red-400 rounded-full' width={15} height={15} />}
+                            {userKeys.includes(friend._id) ? <Circle className='bg-green-400 border none text-white rounded-full' width={15} height={15} /> : <Circle className='bg-white-400 border none text-white rounded-full' width={15} height={15} />}
 
                             <Image src={friend.image?.includes("http") ? friend.image : `/uploads/profiles/${friend.image}`} alt="Friend Zone" width={25} height={25} className='rounded-full' />{friend.name}
                             {unseenMessagesCount > 0 ? (

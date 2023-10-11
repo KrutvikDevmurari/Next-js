@@ -20,7 +20,7 @@ const UserProfile: any = ({ session }: any) => {
     });
     const [image, setImage] = useState(session.user.image)
     const [isloading, setIsloading] = useState(false)
-
+    const [apiMessage, setapiMessage] = useState("")
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData({
@@ -46,9 +46,13 @@ const UserProfile: any = ({ session }: any) => {
         formDataToSend.append('image', session.user.image === formData.image ? null : formData.image);
         formDataToSend.append('name', formData.name);
         formDataToSend.append('email', formData.email);
-        axios.post('/api/user/update', formDataToSend).then(res => {
+        axios.post('/api/user/update', formDataToSend).then((res: any) => {
             setIsloading(false)
-        }).catch(err => {
+            window.location.reload()
+            setapiMessage(res.message)
+        }).catch((err: any) => {
+            console.log(err, "err")
+            setapiMessage(err?.response?.data?.message)
             setIsloading(false)
         })
     };
@@ -75,6 +79,7 @@ const UserProfile: any = ({ session }: any) => {
                                         <Image
                                             src={image.includes("http") ? image : `/uploads/profiles/${image}`}
                                             alt=""
+                                            unoptimized={true}
                                             className="w-40 h-40 m-auto rounded-full shadow"
                                             width={"50"}
                                             height={"50"}
@@ -124,6 +129,7 @@ const UserProfile: any = ({ session }: any) => {
                             Update User
                         </Button>
                     </div>
+                    <p className='text-red-500 align-middle'>{apiMessage}</p>
                 </form>
             </div>
         </section>

@@ -30,6 +30,12 @@ const sidebarOptions: SidebarOption[] = [
         href: '/dashboard/add',
         Icon: 'UserPlus',
     },
+    {
+        id: 2,
+        name: 'Create Group',
+        href: '/dashboard/group',
+        Icon: 'Users',
+    },
 ]
 const sidebarOptions2 = JSON.parse(JSON.stringify(sidebarOptions))
 
@@ -60,17 +66,9 @@ const Layout = async ({ children }: LayoutProps) => {
                     <Image src={image} alt="Friend Zone" width={100} height={100} />
                 </Link>
 
-                {friends !== null && (friends?.length > 0 ? (
-                    <div className='text-xs font-semibold leading-6 text-gray-400'>
-                        Your chats
-                    </div>
-                ) : null)}
 
                 <nav className='flex flex-1 flex-col'>
                     <ul role='list' className='flex flex-1 flex-col gap-y-7'>
-                        <li>
-                            <SidebarChatList sessionId={session.user.id} friends={friends} />
-                        </li>
                         <li>
                             <div className='text-xs font-semibold leading-6 text-gray-400'>
                                 Overview
@@ -102,6 +100,16 @@ const Layout = async ({ children }: LayoutProps) => {
                                 </li>
                             </ul>
                         </li>
+
+                        {friends !== null && (friends?.length > 0 ? (
+                            <div className='text-xs font-semibold leading-6 text-gray-400'>
+                                Your chats
+                            </div>
+                        ) : null)}
+                        <li>
+                            <SidebarChatList sessionId={session.user.id} friends={friends} />
+                        </li>
+
 
                         <UserProfileSidebar session={JSON.parse(JSON.stringify(session))} />
                     </ul>

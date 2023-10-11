@@ -64,6 +64,12 @@ export const updateUserFriendRequests = async (userId: String, friendId: String)
     );
 };
 
+export const addUserGroup = async (userId: String) => {
+    // return await User.updateOne(
+    //     { "_id": userId },
+    //     { $push: { group: { userId: "friendId" } } }
+    // );
+};
 
 
 // Remove user's friend request

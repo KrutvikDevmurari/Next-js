@@ -4,6 +4,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 import Button from '../components/UI/Button'
 import { Icons } from './UI/Icons'
 import { pusherClient } from '@/lib/pusher'
+import { Paperclip } from 'lucide-react'
 
 interface ChatInputProps {
     chatPartner: User
@@ -72,12 +73,15 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId, setTyping, input, 
                     <TextareaAutosize
                         ref={textareaRef}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
+                            if (input.length === 0 && e.key === " ") {
+                                e.preventDefault()
+                            } else if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault()
                                 if (!isLoading) {
                                     sendMessage()
                                 }
                             }
+
                         }}
                         rows={1}
                         value={input}
@@ -96,8 +100,9 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId, setTyping, input, 
                             <div className='' />
                         </div>
                     </div>
-
+                    <Paperclip className='text-indigo-600 absolute right-5 top-3 cursor-pointer' width={20} height={20} />
                 </div>
+
                 <div className=''>
                     <div className='flex-shrin-0'>
                         <Button isLoading={isLoading} className='rounded-full p-2 bg-gray-200 hover:bg-gray-200' style={{ width: '42px', height: '38px' }} onClick={sendMessage} type='submit'>

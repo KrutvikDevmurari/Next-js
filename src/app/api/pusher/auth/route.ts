@@ -25,7 +25,6 @@ export async function POST(req: NextRequest, res: any) {
             },
             // watchlist: ['another_id_1', 'another_id_2']
         };
-        console.log(req, user, "usersocket")
         const authResponse = pusherServer.authenticateUser(socketId as string, user);
         const authChannel = pusherServer.authorizeChannel(socketId as string, channelName as string, userData);
 
