@@ -1,4 +1,3 @@
-import { string } from "zod"
 
 interface User {
     name: string
@@ -19,7 +18,7 @@ interface User {
 interface FriendRequest {
     id: string
     senderId: string
-    receiverId: string
+    receiverId: any
 }
 
 interface Chat {
@@ -28,7 +27,7 @@ interface Chat {
 }
 interface Message {
     senderId: string
-    receiverId?: string
+    [receiverId]?: { id: string }
     text: string
     timestamp: number
 }  

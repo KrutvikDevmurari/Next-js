@@ -1,10 +1,10 @@
 "use client"
-import Cover from '@/components/demo'
+
 import { FC } from 'react'
 
 
 const Page: FC = ({ }) => {
-    return <Cover />
+    return <div>SignOut</div>
 }
 
 export default Page

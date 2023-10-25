@@ -11,8 +11,11 @@ const Page: FC = async () => {
     const friends = JSON.parse(friend)
     return (
         <main className='pt-8'>
-            <h1 className='font-bold text-5xl mb-8 pl-4'>Create a Group with your Friends</h1>
-            <CreateGroup friends={friends} />
+            <h1 className='font-bold text-2xl md:text-4xl lg:text-5xl m-0 md:mb-6 lg:mb-8 pl-4'>
+                Create a Group with your Friends
+            </h1>
+            <CreateGroup friends={friends} session={JSON.parse(JSON.stringify(session))} />
+
         </main>
     )
 }

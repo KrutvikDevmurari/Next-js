@@ -40,7 +40,7 @@ export const addFriendController = async (req: Request) => {
                 return NextResponse.json({ message: 'Friend request already sent', success: false }, { status: 400 });
             }
         }
-        const existingFriend = user.friends.find((request: { userId: any; }) => request.userId.toString() === session.user.id.toString());
+        const existingFriend = user.friends.find((request: { userId: any; }) => request?.userId?.toString() === session.user.id.toString());
         if (existingFriend) {
             return NextResponse.json({ message: 'You are already Friends!!', success: false }, { status: 400 });
         }

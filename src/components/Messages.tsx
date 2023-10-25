@@ -1,13 +1,9 @@
 'use client'
 
-import { pusherClient } from '@/lib/pusher'
-import { cn, toPusherKey, } from '@/lib/utils'
-import { Message } from '@/lib/validations/message'
+import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import Image from 'next/image'
 import { FC, JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useEffect, useRef, useState } from 'react'
-import io from 'socket.io-client'
-let socket;
 
 interface MessagesProps {
   sessionId: string
@@ -81,7 +77,7 @@ const Messages: FC<MessagesProps> = ({
                   'order-1': !isCurrentUser,
                   invisible: hasNextMessageFromSameUser,
                 })}>
-                {/* <Image
+                <Image
                   fill
                   src={
                     isCurrentUser ? (sessionImg as string) : chatPartner.image
@@ -89,7 +85,7 @@ const Messages: FC<MessagesProps> = ({
                   alt='Profile picture'
                   referrerPolicy='no-referrer'
                   className='rounded-full'
-                /> */}
+                />
               </div>
             </div>
           </div>

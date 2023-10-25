@@ -8,19 +8,20 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from './Button'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 
 interface AddFriendButtonProps { }
 
 type FormData = z.infer<typeof addFriendValidator>
 
 const AddFriendButton: FC<AddFriendButtonProps> = ({ }) => {
-    const [showSuccessState, setShowSuccessState] = useState<boolean>(false)
     const [isloading, setIsloading] = useState<boolean>(false)
 
     const {
         register,
         handleSubmit,
         setError,
+        reset,
         formState: { errors },
     } = useForm<FormData>({
         resolver: zodResolver(addFriendValidator),
@@ -31,25 +32,28 @@ const AddFriendButton: FC<AddFriendButtonProps> = ({ }) => {
             await axios.post('/api/friends/add', {
                 email,
             })
-
-            setShowSuccessState(true)
+            toast.success('Request Sent Sucessfully')
+            reset();
         } catch (error) {
             if (error instanceof z.ZodError) {
                 setError('email', { message: error.message })
+                toast.error(error.message)
                 return
             }
 
             if (error instanceof AxiosError) {
-                setError('email', { message: error.response?.data?.message })
+                // setError('email', { message: error.response?.data?.message })
+                toast.error(error.response?.data?.message)
+                reset();
                 return
             }
 
-            setError('email', { message: 'Something went wrong.' })
+            // setError('email', { message: 'Something went wrong.' })
+            toast.error('Something went wrong.')
         }
     }
 
     const onSubmit = (data: FormData) => {
-        setShowSuccessState(false)
         setIsloading(true)
         isloading ? "" : (addFriend(data.email).then(res => {
             setIsloading(false)
@@ -74,9 +78,6 @@ const AddFriendButton: FC<AddFriendButtonProps> = ({ }) => {
                 <Button disabled={isloading}>{isloading ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : "Add"}</Button>
             </div>
             <p className='mt-1 text-sm text-red-600'>{errors.email?.message}</p>
-            {showSuccessState ? (
-                <p className='mt-1 text-sm text-green-600'>Friend request sent!</p>
-            ) : null}
         </form>
     )
 }

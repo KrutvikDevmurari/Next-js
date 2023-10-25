@@ -22,7 +22,6 @@ export const userUpdateController = async (req: any) => {
         }
 
         const _id = await session.user.id;
-
         const data = await req.formData();
         const name = data.get('name');
         const email = data.get('email');
@@ -30,7 +29,6 @@ export const userUpdateController = async (req: any) => {
         const originalFileName = uuidv4() + (file ? file.name : ''); // Generate a unique filename if a file is provided
         const filePath = path.join(uploadDir, originalFileName);
         if (file && file.name) {
-            console.log(file.name, "file.name")
             if (!file.name.includes("http")) {
                 if (file.type.includes("jpg") || file.type.includes("png")) {
                     const fileBuffer = await file.arrayBuffer();
@@ -39,7 +37,6 @@ export const userUpdateController = async (req: any) => {
                     await User.findByIdAndUpdate(_id, { name, email, image: originalFileName });
 
                 } else {
-
                     return NextResponse.json({ message: 'Please provide a valid image here', success: false }, { status: 422 });
                 }
             }

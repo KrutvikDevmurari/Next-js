@@ -12,6 +12,8 @@ import FriendRequestSidebarOptions from '@/components/FriendRequestSidebarOption
 import SidebarChatList from '@/components/SideBarChatList'
 import MobileChatLayout from '@/components/MobileChatLayout'
 import UserProfileSidebar from '@/components/userProfileSidebar'
+import SidebarGroupChatList from '@/components/SideBarGroupChatList'
+import SelfChat from '@/components/SelfChat'
 
 interface LayoutProps {
     children: ReactNode
@@ -46,8 +48,9 @@ const Layout = async ({ children }: LayoutProps) => {
     // const friends: User[] = [] // Assuming User is the type of user objects
 
     const friend: any = await getUserfromSession(session)
+    const group: any = session.user.group
     const friends = JSON.parse(friend)
-    const unseenRequestCount = JSON.parse(JSON.stringify(session.user.requests.length))
+    const unseenRequestCount = JSON.parse(JSON.stringify(session.user.requests?.length))
     const sessionId = JSON.parse(JSON.stringify(session.user.id))
     const image = '/logomain.png'
     return (
@@ -100,23 +103,43 @@ const Layout = async ({ children }: LayoutProps) => {
                                 </li>
                             </ul>
                         </li>
+                        <>
+                            <div className='text-xs font-semibold leading-6 text-gray-400'>
+                                Self Chat
+                            </div>
+                            <li>
+                                <SelfChat session={JSON.parse(JSON.stringify(session))} friends={friends} />
+                            </li>
+                        </>
 
                         {friends !== null && (friends?.length > 0 ? (
-                            <div className='text-xs font-semibold leading-6 text-gray-400'>
-                                Your chats
-                            </div>
+                            <>
+                                <div className='text-xs font-semibold leading-6 text-gray-400'>
+                                    Your chats
+                                </div>
+                                <li>
+                                    <SidebarChatList sessionId={session.user.id} friends={friends} />
+                                </li>
+                            </>
                         ) : null)}
-                        <li>
-                            <SidebarChatList sessionId={session.user.id} friends={friends} />
-                        </li>
 
+                        {group !== null && (group?.length > 0 ? (
+                            <>
+                                <div className='text-xs font-semibold leading-6 text-gray-400'>
+                                    Group chats
+                                </div>
+                                <li>
+                                    <SidebarGroupChatList sessionId={session.user.id} friends={JSON.parse(JSON.stringify(group))} />
+                                </li>
+                            </>
+                        ) : null)}
 
                         <UserProfileSidebar session={JSON.parse(JSON.stringify(session))} />
                     </ul>
                 </nav>
             </div>
 
-            <aside className='max-h-screen  w-full bg-gray-200'>
+            <aside className='max-h-screen  w-full bg-gray-200 overflow-auto'>
                 {children}
             </aside>
         </div>

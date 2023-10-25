@@ -21,7 +21,6 @@ const FriendRequests: FC<FriendRequestsProps> = ({
         incomingFriendRequests
     )
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    console.log("incomingFriendRequests => ", incomingFriendRequests);
     useEffect(() => {
         pusherClient.subscribe(
             toPusherKey(`user:${userId}:incoming_friend_requests`)
@@ -58,7 +57,6 @@ const FriendRequests: FC<FriendRequestsProps> = ({
 
     const denyFriend = async (senderId: string) => {
         setIsLoading(true)
-        console.log(senderId, "senderId")
         !isLoading && await axios.post('/api/friends/delete', { id: senderId }).then(res => {
             setIsLoading(false)
             window.location.reload()

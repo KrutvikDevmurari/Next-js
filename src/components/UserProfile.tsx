@@ -1,10 +1,8 @@
 "use client"
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import Image from 'next/image';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import Button from './UI/Button';
+import ProfilePhotoSection from './UI/ProfilePhotoSection';
 
 interface FormData {
     image: File | null;
@@ -38,7 +36,6 @@ const UserProfile: any = ({ session }: any) => {
         });
         setImage(imageFile2)
     };
-    console.log(image, "image")
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setIsloading(true)
@@ -56,7 +53,8 @@ const UserProfile: any = ({ session }: any) => {
             setIsloading(false)
         })
     };
-
+    const storageLocation = "/uploads/profiles/"
+    const header = "Profile Photo"
 
     return (
         <section className="bg-white dark:bg-gray-900">
@@ -65,37 +63,7 @@ const UserProfile: any = ({ session }: any) => {
                 <form onSubmit={handleSubmit} encType='multipart/form-data' >
                     <div className="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
                         <div className="sm:col-span-2">
-                            <div className="col-span-6 ml-2 sm:col-span-4 md:mr-3">
-                                <input type="file" className="hidden" name="image" id="fileInput" onChange={(e: any) => {
-                                    handleImageChange(e)
-                                }} />
-
-                                <label className="block text-gray-700 text-sm font-bold mb-2 text-center" >
-                                    Profile Photo <span className="text-red-600"> </span>
-                                </label>
-
-                                <div className="text-center">
-                                    <div className="mt-2">
-                                        <Image
-                                            src={image.includes("http") ? image : `/uploads/profiles/${image}`}
-                                            alt=""
-                                            unoptimized={true}
-                                            className="w-40 h-40 m-auto rounded-full shadow"
-                                            width={"50"}
-                                            height={"50"}
-                                        />
-                                    </div>
-                                    <div className="mt-2" style={{ display: "none" }}>
-                                        <span className="block w-40 h-40 rounded-full m-auto shadow" style={{ backgroundSize: "cover", backgroundRepeat: "no-repeat", backgroundPosition: "center center", backgroundImage: "" }}>
-                                        </span>
-                                    </div>
-                                    <button type="button" className={"inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-400 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out duration-150 mt-2 ml-3"} onClick={() => {
-                                        document?.getElementById('fileInput')?.click()
-                                    }}>
-                                        Select New Photo
-                                    </button>
-                                </div>
-                            </div>
+                            <ProfilePhotoSection handleImageChange={handleImageChange} image={image} storageLocation={storageLocation} header={header} />
                         </div>
                         <div className="w-full">
                             <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>

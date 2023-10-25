@@ -17,16 +17,14 @@ export const confirmFriendRequestController = async (req: Request) => {
         } else {
             const userID = await session.user.id
             const friends: any = await getUserfromSession(session)
-            console.log(JSON.parse(friends), "friendssss")
-            const alreadyFriends = JSON.parse(friends).some((res: any) => res.userID === friendId)
+            const alreadyFriends = JSON.parse(friends).some((res: any) => res?.userId === friendId)
             if (alreadyFriends) {
                 return NextResponse.json({ message: 'Your are already friends...', success: false }, { status: 400 });
             }
-            console.log(alreadyFriends, "alreadyFriends")
             // Confirm the friend request
             const confirm = await confirmFriendRequest(userID, friendId);
             const removerequest = await removeUserFriendRequest(userID, friendId)
-            pusherServer.trigger(toPusherKey(`user:${session.user.id}:friends`), `new_friend`, "")
+            pusherServer.trigger(toPusherKey(`user:friends`), `new_friend`, "")
             return NextResponse.json({ message: 'Friend request confirmed', success: true }, { status: 200 });
         }
     } catch (error) {

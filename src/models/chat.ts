@@ -6,7 +6,11 @@ const ChatSchema = new mongoose.Schema({
     messages: [{
         // Define the structure of each object in the 'messages' array
         senderId: { type: String, required: true },
-        receiverId: { type: String, required: true },
+        receiverId: [
+            {
+                id: { type: String, required: true }
+            }
+        ],
         text: { type: String, required: true },
         timestamp: { type: Number, required: true },
     }],

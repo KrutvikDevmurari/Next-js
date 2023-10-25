@@ -1,5 +1,4 @@
 'use client'
-
 import { pusherClient } from '@/lib/pusher'
 import { toPusherKey } from '@/lib/utils'
 import { User } from 'lucide-react'
@@ -23,12 +22,11 @@ const FriendRequestSidebarOptions: FC<FriendRequestSidebarOptionsProps> = ({
         pusherClient.subscribe(
             toPusherKey(`user:${sessionId}:incoming_friend_requests`)
         )
-        pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
+        pusherClient.subscribe(toPusherKey(`user:friends`))
 
         const friendRequestHandler = () => {
             setUnseenRequestCount((prev) => prev + 1)
         }
-
         const addedFriendHandler = () => {
             setUnseenRequestCount((prev) => prev - 1)
         }
