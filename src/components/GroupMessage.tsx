@@ -1,7 +1,9 @@
 'use client'
-import React, { FC, useRef, useEffect } from 'react';
+import React, { FC, useRef, useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import Image from 'next/image';
+import { ImagePreviewModal } from './ImagePreviewModal';
+import { Download } from 'lucide-react';
 
 interface MessagesProps {
     sessionId: string;
@@ -19,7 +21,17 @@ const GroupMessage: FC<MessagesProps> = ({
     chatpartnerDetail,
 }) => {
     const scrollDownRef = useRef<HTMLDivElement | null>(null);
+    const [selectedImage, setSelectedImage] = useState('');
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const openModal = (image: any) => {
+        setSelectedImage(image);
+        setModalIsOpen(true);
+    };
 
+    const closeModal = () => {
+        setSelectedImage('');
+        setModalIsOpen(false);
+    };
     const formatTimestamp = (timestamp: number) => {
         return format(timestamp, 'HH:mm');
     };
@@ -42,9 +54,56 @@ const GroupMessage: FC<MessagesProps> = ({
                             <div className={isCurrentUser ? 'order-1 items-end' : 'order-2 items-start'}>
                                 <div className="flex flex-col space-y-2 text-base max-w-xs mx-2">
                                     <span
-                                        className={`px-4 py-2 rounded-lg inline-block ${isCurrentUser ? 'bg-green-50 text-green-900' : 'bg-white text-gray-900'
+                                        className={`px-4 flex flex-col py-2 rounded-lg inline-block ${isCurrentUser ? 'bg-green-50 text-green-900' : 'bg-white text-gray-900'
                                             } ${!hasNextMessageFromSameUser && isCurrentUser ? 'rounded-br-none' : ''} ${!hasNextMessageFromSameUser && !isCurrentUser ? 'rounded-bl-none' : ''
                                             }`}>
+                                        {message.attachment !== null && message.attachment.map((res: any) => {
+                                            console.log(res, "ressss")
+                                            if (res.name && (res.name.includes("http"))) {
+                                                return (
+                                                    <span key={res._id} onClick={() => openModal(res.name?.includes("http") ? res.name : `/uploads/chat/${res.name}`)}>
+                                                        <img className='inline-block' src={`${res.name}`} width={200} height={200} alt={''} />
+                                                    </span>
+                                                );
+                                            } else if (res.name && (res.name.includes("gif") || res.name.includes("jpg") || res.name.includes("png"))) {
+                                                return (
+                                                    <span key={res._id} onClick={() => openModal(res.name?.includes("http") ? res.name : `/uploads/chat/${res.name}`)}>
+                                                        <Image className='inline-block' priority={false} src={`/uploads/chat/${res.name}`} width={200} height={200} alt={''} />
+                                                    </span>
+                                                );
+                                            } else if (res.name?.includes('pdf')) {
+                                                return (
+                                                    <span key={res._id} className='flex justify-center items-center'>
+                                                        <Image src={"/pdf.png"} alt="" height={50} width={50} className='mr-2' />
+                                                        {res.name}
+                                                        <a className='ml-2' target="_blank" href={`/uploads/chat/${res.name}`}><Download /></a>
+                                                    </span>
+                                                )
+                                            } else if (res.name?.includes('doc')) {
+                                                return (
+                                                    <span key={res._id} className='flex justify-center items-center'>
+                                                        <Image src={"/word.png"} alt="" height={50} width={50} className='mr-2' />
+                                                        {res.name}
+                                                        <a className='ml-2' target="_blank" href={`/uploads/chat/${res.name}`}><Download /></a>
+                                                    </span>
+                                                )
+                                            } else if (res.name?.includes('xls')) {
+                                                return (
+                                                    <span key={res._id} className='flex justify-center items-center'>
+                                                        <Image src={"/xls.png"} alt="" height={50} width={50} className='mr-2' />
+                                                        {res.name}
+                                                        <a className='ml-2' target="_blank" href={`/uploads/chat/${res.name}`}><Download /></a>
+                                                    </span>
+                                                )
+                                            } else {
+                                                return (
+                                                    <span key={res._id} className='flex justify-center items-center'>
+                                                        <Image src={"/doc.png"} alt="" height={50} width={50} className='mr-2' />
+                                                        {res.name}
+                                                    </span>
+                                                )
+                                            }
+                                        })}
                                         {message.text}{' '}
                                         <span className="ml-2 text-xs text-gray-400">
                                             {formatTimestamp(message.timestamp)}
@@ -58,7 +117,9 @@ const GroupMessage: FC<MessagesProps> = ({
                                     }`}>
                                 <Image
                                     fill
-                                    src={isCurrentUser ? (sessionImg as string) : chatPartnerDetail?.image}
+                                    src={
+                                        isCurrentUser ? (sessionImg?.includes('http') ? sessionImg : `/uploads/profiles/${sessionImg}` || '') : (chatPartnerDetail.image?.includes('http') ? chatPartnerDetail.image : `/uploads/profiles/${chatPartnerDetail.image}` || '')
+                                    }
                                     alt="Profile picture"
                                     referrerPolicy="no-referrer"
                                     className="rounded-full"
@@ -68,6 +129,8 @@ const GroupMessage: FC<MessagesProps> = ({
                     </div>
                 );
             })}
+            {modalIsOpen && (
+                <ImagePreviewModal onClose={closeModal} imageUrl={selectedImage} />)}
         </div>
     );
 };

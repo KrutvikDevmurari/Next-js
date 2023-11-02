@@ -8,6 +8,12 @@ const MessageSchema = new mongoose.Schema({
             id: { type: String, required: true }
         }
     ],
+    attachment: [
+        {
+            id: { type: String, required: true },
+            name: { type: String, required: true }
+        }
+    ],
     text: { type: String },
     timestamp: { type: Number },
 });

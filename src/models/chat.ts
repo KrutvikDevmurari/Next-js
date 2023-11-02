@@ -11,7 +11,12 @@ const ChatSchema = new mongoose.Schema({
                 id: { type: String, required: true }
             }
         ],
-        text: { type: String, required: true },
+        text: { type: String },
+        attachment: [
+            {
+                name: { type: String }
+            }
+        ] || null,
         timestamp: { type: Number, required: true },
     }],
 });

@@ -23,7 +23,7 @@ const FriendRequests: FC<FriendRequestsProps> = ({
     const [isLoading, setIsLoading] = useState<boolean>(false)
     useEffect(() => {
         pusherClient.subscribe(
-            toPusherKey(`user:${userId}:incoming_friend_requests`)
+            toPusherKey(`user:${userId} `)
         )
         const friendRequestHandler = ({
             id,

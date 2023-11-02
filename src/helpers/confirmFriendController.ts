@@ -1,6 +1,6 @@
 // confirmFriendRequestController.ts
 import { NextResponse } from 'next/server';
-import { confirmFriendRequest, getUserfromSession, removeUserFriendRequest } from './usermodel'; // Import necessary function
+import { confirmFriendRequest, getUserById, getUserfromSession, removeUserFriendRequest } from './usermodel'; // Import necessary function
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { pusherServer } from '@/lib/pusher';
@@ -22,9 +22,14 @@ export const confirmFriendRequestController = async (req: Request) => {
                 return NextResponse.json({ message: 'Your are already friends...', success: false }, { status: 400 });
             }
             // Confirm the friend request
+            const FriendData = await getUserById(friendId)
             const confirm = await confirmFriendRequest(userID, friendId);
             const removerequest = await removeUserFriendRequest(userID, friendId)
-            pusherServer.trigger(toPusherKey(`user:friends`), `new_friend`, "")
+            await pusherServer.trigger(
+                toPusherKey(`user:${friendId}:confirm_friend_requests`),
+                'confirm_friend_requests',
+                FriendData
+            )
             return NextResponse.json({ message: 'Friend request confirmed', success: true }, { status: 200 });
         }
     } catch (error) {

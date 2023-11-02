@@ -63,3 +63,14 @@
 .animate-typing-dot {
   animation: mercuryTypingAnimation 1.8s infinite ease-in-out;
 }
+
+
+.microphone {
+  background-color: white !important;
+  box-shadow: none !important;
+  color: aliceblue !important;
+}
+
+.audio-recorder-mic {
+  color: blue !important;
+}

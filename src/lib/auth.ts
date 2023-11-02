@@ -40,7 +40,8 @@ export const authOptions: NextAuthOptions = {
                     email: token.email,
                     image: token.picture,
                     requests: [],
-                    friends: []
+                    friends: [],
+                    status: []
 
                 });
                 await newUser.save();
@@ -54,10 +55,9 @@ export const authOptions: NextAuthOptions = {
                 picture: dbUser.image,
                 requests: dbUser.requests,
                 friends: dbUser.friends,
-                group: dbUser.group
+                group: dbUser.group,
+                status: dbUser.status
             }
-
-
         },
         async session({ session, token }) {
             if (token) {
@@ -68,6 +68,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.requests = token.requests
                 session.user.friends = token.friends
                 session.user.group = token.group
+                session.user.status = token.status
             }
             return session
         },

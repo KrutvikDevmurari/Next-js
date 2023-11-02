@@ -10,6 +10,8 @@ import UnseenChatToast from './UnseenChatToast'
 import { Circle, Loader2, UserMinus } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import axios from 'axios'
+import { StatusPreviewModal } from './StatusPreviewModal'
+import Link from 'next/link'
 
 interface SidebarChatListProps {
     friends: any[] | null
@@ -29,16 +31,27 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
     const [activeChats, setActiveChats] = useState<any>(friends)
     const [userKeys, setUserKeys] = useState<any>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const openModal = () => {
+        setModalIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalIsOpen(false);
+    };
+
     useEffect(() => {
         pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`))
         pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
         pusherClient.subscribe(toPusherKey(`user:unfriend`))
+        pusherClient.subscribe(
+            toPusherKey(`user:${sessionId}:confirm_friend_requests`)
+        )
 
         const newFriendHandler = (newFriend: User) => {
             setActiveChats((prev: any) => [...prev, newFriend])
         }
         const unFriendHandler = (newFriend: User) => {
-            debugger
             setActiveChats((prev: any) => [...prev, newFriend])
         }
 
@@ -67,9 +80,11 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
         };
 
 
+
         pusherClient.bind('new_message', chatHandler)
-        pusherClient.bind('new_friend', newFriendHandler)
+        // pusherClient.bind('new_friend', newFriendHandler)
         pusherClient.bind('un_friend', unFriendHandler)
+        pusherClient.bind('confirm_friend_requests', newFriendHandler)
 
         return () => {
             pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`))
@@ -77,7 +92,8 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
 
             pusherClient.unbind('new_message', chatHandler)
             pusherClient.unbind('new_friend', newFriendHandler)
-            pusherClient.bind('un_friend', unFriendHandler)
+            pusherClient.unbind('un_friend', unFriendHandler)
+            pusherClient.unbind('confirm_friend_requests', newFriendHandler)
         }
     }, [pathname, sessionId, router, signIn])
 
@@ -122,10 +138,18 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
         };
     }, []);
     const UnFriendHandler = async (senderId: any) => {
+        setIsLoading(true)
         !isLoading && await axios.post('/api/friends/unfriend', { id: senderId, cache: 'no-store' }).then(res => {
             setIsLoading(false)
             router.push('/dashboard/add')
+            setActiveChats((prev: any) => prev.filter((res: any) => res._id !== senderId));
         })
+    }
+    const handleStatusDisplay = (seenData: any) => {
+        openModal()
+        // if (seenData.includes(sessionId)) {
+        //     return;
+        // }
     }
     return (
         <ul role='list' className='max-h-[25rem] overflow-y-auto -mx-2 space-y-1'>
@@ -133,31 +157,34 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
                 const unseenMessagesCount = unseenMessages.filter((unseenMsg) => {
                     return unseenMsg.senderId === friend._id
                 }).length
+                console.log(friend.status, "friend")
                 return (
                     <>
                         {friend !== null ? <li key={friend._id}>
                             <div
-
                                 className='text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold justify-between cursor-pointer'>
-                                <a className='group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold' href={`/dashboard/chat/${chatHrefConstructor(
+                                <Link className='group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold' href={`/dashboard/chat/${chatHrefConstructor(
                                     sessionId,
                                     friend?._id
                                 )}`}>
                                     {userKeys.includes(friend?._id) ? <Circle className='bg-green-400 border none text-white rounded-full' width={15} height={15} /> : <Circle className='bg-white-400 border none text-white rounded-full' width={15} height={15} />}
-                                    <Image src={friend?.image?.includes("http") ? friend?.image : `/uploads/profiles/${friend?.image}`} alt="Friend Zone" width={25} height={25} className='rounded-full' />{friend.name}
+                                    <Image src={friend?.image?.includes("http") ? friend?.image : `/uploads/profiles/${friend?.image}`} alt="Friend Zone" width={25} height={25} className={'rounded-full ' + (friend.status.length > 0 ? "border-2 border-green-400" : "")} onClick={() => { friend.status.length > 0 && handleStatusDisplay(friend.status[0].seen) }} />{friend.name}
                                     {unseenMessagesCount > 0 ? (
                                         <div className='bg-indigo-600 font-medium text-xs text-white w-4 h-4 rounded-full flex justify-center items-center'>
                                             {unseenMessagesCount}
                                         </div>
                                     ) : null}
-                                </a>
+                                </Link>
                                 {isLoading ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : <UserMinus className='invisible group-hover:visible' width={15} height={15} onClick={() => UnFriendHandler(friend._id)} />}
+
                             </div>
-                        </li> : null}
+                        </li > : null}
+                        {modalIsOpen && (
+                            friend?.status.length > 0 && <StatusPreviewModal onClose={closeModal} text={friend?.status.length > 0 ? friend?.status[0].text : null} timestamp={friend?.status.length > 0 ? friend?.status[0].timestamp : null} />)}
                     </>
                 )
             })}
-        </ul>
+        </ul >
     )
 }
 

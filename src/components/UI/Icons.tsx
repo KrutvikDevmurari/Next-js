@@ -1,4 +1,4 @@
-import { LucideProps, UserPlus, Users } from 'lucide-react'
+import { LucideProps, UserPlus, Users, CircleDashed } from 'lucide-react'
 
 export const Icons = {
     Logo: (props: LucideProps) => (
@@ -10,7 +10,8 @@ export const Icons = {
         </svg>
     ),
     UserPlus,
-    Users
+    Users,
+    CircleDashed
 }
 
 export type Icon = keyof typeof Icons

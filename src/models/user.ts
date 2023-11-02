@@ -27,6 +27,19 @@ const UserSchema = new mongoose.Schema({
             userId: { type: String, required: true },
         },
     ],
+    status: [
+        {
+            seen: [
+                {
+                    id: { type: String },
+                    seentimestamp: { type: Number },
+
+                }
+            ],
+            text: { type: String },
+            timestamp: { type: Number },
+        }
+    ]
 });
 
 

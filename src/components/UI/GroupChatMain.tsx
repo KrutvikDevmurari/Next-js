@@ -24,8 +24,10 @@ const GroupChatMain: FC<ChatHeaderProps> = ({ chatPartner, chatId, session, init
     const [messages, setMessages] = useState<any[]>(initialMessages)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [input, setInput] = useState<string>('')
+    const [attachment, setAttachment] = useState<any>('')
     const textareaRef = useRef<HTMLTextAreaElement | null>(null)
     const [isChatPartner, setIsChatPartner] = useState<any>([])
+    const [fileOpen, setFileOpen] = useState(false)
     const chatPartnerHandler = (res: any) => {
         const partnerData = chatpartnerDetail.find((response: any) => response._id === res.data);
         setIsChatPartner((prev: any) => {
@@ -41,14 +43,17 @@ const GroupChatMain: FC<ChatHeaderProps> = ({ chatPartner, chatId, session, init
             });
         }, 5000);
     };
-    console.log(isChatPartner, "isChatPartner")
-    const sendMessage = async () => {
-        if (!input) return
+    const sendMessage = async (attachments: any) => {
+        if (!input && (attachments === undefined || attachments === "")) return
         setIsLoading(true)
-
+        const formDatatosend = new FormData();
+        formDatatosend.append("text", input);
+        formDatatosend.append("chatId", chatId);
+        formDatatosend.append("attachment", attachments);
         try {
-            await axios.post('/api/message/send', { text: input, chatId })
+            await axios.post('/api/message/send', formDatatosend)
             setInput('')
+            setAttachment("")
             textareaRef.current?.focus()
         } catch {
             toast.error('Something went wrong. Please try again later.')
@@ -56,6 +61,22 @@ const GroupChatMain: FC<ChatHeaderProps> = ({ chatPartner, chatId, session, init
             setIsLoading(false)
         }
     }
+    useEffect(() => {
+        const handleDocumentClick = () => {
+            setFileOpen(false);
+        };
+
+        document.addEventListener('click', handleDocumentClick);
+
+        return () => {
+            document.removeEventListener('click', handleDocumentClick);
+            // Unsubscribe from the channel when the component unmounts
+            pusherClient.unbind('client-typing', (data: any) => {
+                const { typing } = data;
+                setTyping(false);
+            });
+        };
+    }, [fileOpen]);
     useEffect(() => {
         pusherClient.subscribe(
             toPusherKey(`chat:${chatId}`)
@@ -116,7 +137,8 @@ const GroupChatMain: FC<ChatHeaderProps> = ({ chatPartner, chatId, session, init
             sessionId={session.user.id}
             messages={messages}
         />
-        <ChatInput chatId={chatId} setInput={setInput} textareaRef={textareaRef} chatPartner={chatPartner} setTyping={setTyping} sendMessage={sendMessage} input={input} isLoading={isLoading} session={session} chatPartnerHandler={chatPartnerHandler} />
+        {/* <ChatInput attachment={attachment} chatId={chatId} setInput={setInput} textareaRef={textareaRef} chatPartner={chatPartner} setTyping={setTyping} sendMessage={sendMessage} input={input} isLoading={isLoading} fileOpen={fileOpen} setFileOpen={setFileOpen} session={session} chatPartnerHandler={chatPartnerHandler} setAttachment={setAttachment} /> */}
+        <ChatInput chatId={chatId} attachment={attachment} setInput={setInput} textareaRef={textareaRef} chatPartner={chatPartner} setTyping={setTyping} sendMessage={sendMessage} input={input} fileOpen={fileOpen} setFileOpen={setFileOpen} setAttachment={setAttachment} isLoading={isLoading} session={session} chatPartnerHandler={chatPartnerHandler} />
 
     </div>
 

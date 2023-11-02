@@ -11,6 +11,14 @@ interface User {
         [users]: { id: string }
         createdBy: string,
     }
+    [status: any[]]: {
+        [seen: any[]]: {
+            id: string,
+            seentimestamp: number
+        }
+        text: string,
+        timestamp: number,
+    },
     [requests: string]: { id: string, userApproved: boolean }
 }
 
@@ -28,6 +36,7 @@ interface Chat {
 interface Message {
     senderId: string
     [receiverId]?: { id: string }
-    text: string
+    text: string,
+    [attachment]?: { name: string, _id: any }
     timestamp: number
 }  

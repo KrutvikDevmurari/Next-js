@@ -38,6 +38,12 @@ const sidebarOptions: SidebarOption[] = [
         href: '/dashboard/group',
         Icon: 'Users',
     },
+    {
+        id: 2,
+        name: 'Status',
+        href: '/dashboard/status',
+        Icon: 'CircleDashed',
+    },
 ]
 const sidebarOptions2 = JSON.parse(JSON.stringify(sidebarOptions))
 

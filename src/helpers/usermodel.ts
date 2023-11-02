@@ -71,7 +71,7 @@ export const getUserfromSession = async (session: any) => {
         const friendsdata = await Promise.all(friends.map(async (res: any) => {
             const id = res.userId;
             try {
-                const user = await User.findOne({ _id: id }).select('email name _id image');
+                const user = await User.findOne({ _id: id }).select('email name _id image status');
                 return user;
             } catch (error) {
                 return error; // or handle the error in an appropriate way
@@ -92,6 +92,45 @@ export const updateUserFriendRequests = async (userId: String, friendId: String)
     );
 };
 
+
+// update user status
+export const updateUserStatus = async (userId: string, text: string) => {
+    try {
+        const user = await User.findOne({ _id: userId });
+
+        if (user) {
+            user.status.push({ seen: [], text: text, timestamp: Date.now() });
+            await user.save();
+            return { success: true, message: "Status updated successfully" };
+        } else {
+            return { success: false, message: "User not found" };
+        }
+    } catch (error: any) {
+        return { success: false, message: `Error in adding status: ${error.message}` };
+    }
+};
+
+export const deleteUserStatus = async (userId: string, statusId: any) => {
+    const user = await User.findById(userId);
+    console.log(statusId, "statusId")
+    if (!user) {
+        return { success: false, message: "User not found" };
+    }
+    const statusIndex = user.status.findIndex((status: any) => status._id.toString() === statusId.toString());
+    if (statusIndex === -1) {
+        return { success: false, message: "Status not found for the user" };
+    }
+    user.status.splice(statusIndex, 1);
+    await user.save();
+    return { success: true, message: "Status deleted successfully" };
+};
+
+export const seenUserStatus = async (userId: String, id: String) => {
+    return User.updateOne(
+        { "_id": id },
+        { $pull: { status: { seen: userId } } }
+    );
+};
 
 
 export const addUserGroup = async (userId: { toString: () => any; }, groupName: FormDataEntryValue, groupImage: string, users: any, createdBy: any) => {
