@@ -59,7 +59,23 @@ const GroupMessage: FC<MessagesProps> = ({
                                             }`}>
                                         {message.attachment !== null && message.attachment.map((res: any) => {
                                             console.log(res, "ressss")
-                                            if (res.name && (res.name.includes("http"))) {
+                                            if (res.name?.includes("mp3")) {
+                                                return (
+                                                    <span key={res._id} onClick={() => openModal(res.name?.includes("http") ? res.name : `/uploads/chat/${res.name}`)}>
+                                                        <audio controls src={res.name?.includes("http") ? res.name : `/uploads/chat/${res.name}`}>
+                                                            Your browser does not support the audio element.
+                                                        </audio>
+                                                    </span>
+                                                );
+                                            } else if (res.name && (res.name.includes("mp4"))) {
+                                                return (
+                                                    <video width={"400"} controls>
+                                                        <source src={res.name?.includes("http") ? res.name : `/uploads/chat/${res.name}`} type="audio/mp3" />
+                                                        Your browser does not support HTML video.
+                                                    </video>
+                                                );
+                                            }
+                                            else if (res.name && (res.name.includes("http"))) {
                                                 return (
                                                     <span key={res._id} onClick={() => openModal(res.name?.includes("http") ? res.name : `/uploads/chat/${res.name}`)}>
                                                         <img className='inline-block' src={`${res.name}`} width={200} height={200} alt={''} />
@@ -100,6 +116,7 @@ const GroupMessage: FC<MessagesProps> = ({
                                                     <span key={res._id} className='flex justify-center items-center'>
                                                         <Image src={"/doc.png"} alt="" height={50} width={50} className='mr-2' />
                                                         {res.name}
+                                                        <a className='ml-2' target="_blank" href={`/uploads/chat/${res.name}`}><Download /></a>
                                                     </span>
                                                 )
                                             }
