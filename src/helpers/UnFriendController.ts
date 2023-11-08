@@ -23,7 +23,7 @@ export const UnFriendController = async (req: Request) => {
             }
 
             const confirm = await UnFriend(userID, friendId);
-            pusherServer.trigger(toPusherKey(`user:unfriend`), friendId, "")
+            pusherServer.trigger(toPusherKey(`user:${friendId}:unfriend`), "un_friend", friendId)
             return NextResponse.json({ message: 'Friend request confirmed', success: true }, { status: 200 });
         }
     } catch (error) {

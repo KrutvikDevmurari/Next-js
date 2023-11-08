@@ -14,6 +14,7 @@ import MobileChatLayout from '@/components/MobileChatLayout'
 import UserProfileSidebar from '@/components/userProfileSidebar'
 import SidebarGroupChatList from '@/components/SideBarGroupChatList'
 import SelfChat from '@/components/SelfChat'
+import axios from 'axios'
 
 interface LayoutProps {
     children: ReactNode
@@ -49,7 +50,13 @@ const sidebarOptions2 = JSON.parse(JSON.stringify(sidebarOptions))
 
 const Layout = async ({ children }: LayoutProps) => {
     const session = await getServerSession(authOptions)
-    if (!session) notFound()
+    if (!session) {
+        notFound()
+    }
+    if (session.expires) {
+        await axios.post('api/user/offline')
+        notFound()
+    }
 
     // const friends: User[] = [] // Assuming User is the type of user objects
 

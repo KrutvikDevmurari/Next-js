@@ -45,7 +45,6 @@ const UserProfile: any = ({ session }: any) => {
         formDataToSend.append('email', formData.email);
         axios.post('/api/user/update', formDataToSend).then((res: any) => {
             setIsloading(false)
-            window.location.reload()
             setapiMessage(res.message)
         }).catch((err: any) => {
             console.log(err, "err")

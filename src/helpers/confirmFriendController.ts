@@ -17,19 +17,36 @@ export const confirmFriendRequestController = async (req: Request) => {
         } else {
             const userID = await session.user.id
             const friends: any = await getUserfromSession(session)
-            const alreadyFriends = JSON.parse(friends).some((res: any) => res?.userId === friendId)
+            const alreadyFriends = JSON.parse(friends).some((res: any) => res?._id === friendId)
             if (alreadyFriends) {
-                return NextResponse.json({ message: 'Your are already friends...', success: false }, { status: 400 });
+                const removerequest = await removeUserFriendRequest(userID, friendId)
+                return NextResponse.json({ message: 'Your are already friends...', success: false }, { status: 403 });
             }
             // Confirm the friend request
-            const FriendData = await getUserById(friendId)
+            const FriendData = {
+                FriendData: await getUserById(friendId),
+                currentuserData: session.user
+            }
             const confirm = await confirmFriendRequest(userID, friendId);
             const removerequest = await removeUserFriendRequest(userID, friendId)
-            await pusherServer.trigger(
-                toPusherKey(`user:${friendId}:confirm_friend_requests`),
-                'confirm_friend_requests',
-                FriendData
-            )
+            // const puseherChannel1 = await pusherServer.trigger(
+            //   ,
+            //     ,
+            //    
+            // )
+            const events = [
+                {
+                    channel: toPusherKey(`user:${friendId}:confirm_friend_requests`),
+                    name: 'confirm_friend_requests',
+                    data: FriendData,
+                },
+                {
+                    channel: toPusherKey(`confirm_friend_requests2`),
+                    name: 'confirm_friend_requests',
+                    data: FriendData,
+                },
+            ];
+            await pusherServer.triggerBatch(events);
             return NextResponse.json({ message: 'Friend request confirmed', success: true }, { status: 200 });
         }
     } catch (error) {

@@ -41,8 +41,12 @@ export const authOptions: NextAuthOptions = {
                     image: token.picture,
                     requests: [],
                     friends: [],
-                    status: []
-
+                    status: [],
+                    group: [],
+                    isActive: true,
+                    isOnline: false,
+                    createTime: Date.now(),
+                    updatedTime: null
                 });
                 await newUser.save();
                 token.id = user?.id
@@ -56,7 +60,11 @@ export const authOptions: NextAuthOptions = {
                 requests: dbUser.requests,
                 friends: dbUser.friends,
                 group: dbUser.group,
-                status: dbUser.status
+                status: dbUser.status,
+                isActive: dbUser.isActive,
+                isOnline: dbUser.isOnline,
+                createdTime: dbUser.createdTime,
+                updatdTime: dbUser.updatedTime
             }
         },
         async session({ session, token }) {
@@ -69,6 +77,9 @@ export const authOptions: NextAuthOptions = {
                 session.user.friends = token.friends
                 session.user.group = token.group
                 session.user.status = token.status
+                session.user.isActive = token.isActive
+                session.user.createdTime = token.createdTime
+                session.user.updatdTime = token.updatdTime
             }
             return session
         },

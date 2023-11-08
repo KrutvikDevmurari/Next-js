@@ -6,6 +6,7 @@ import axios from 'axios'
 import { Check, Loader2, UserPlus, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
 
 interface FriendRequestsProps {
     incomingFriendRequests: IncomingFriendRequest[]
@@ -43,13 +44,18 @@ const FriendRequests: FC<FriendRequestsProps> = ({
     }, [userId])
 
     const acceptFriend = async (senderId: string) => {
-        setFriendRequests((prev) =>
-            prev.filter((request) => request.id !== senderId)
-        )
         setIsLoading(true)
         !isLoading && await axios.post('/api/friends/confirm', { id: senderId, cache: 'no-store' }).then(res => {
             setIsLoading(false)
-            window.location.reload()
+            axios.get('/api/friends/get/requests').then(res => {
+                setFriendRequests(res.data.data.friendRequests)
+            })
+        }).catch((err: any) => {
+            setIsLoading(false)
+            toast.error((err.response.data.message ? err.response.data.message : 'Something went wrong'))
+            axios.get('/api/friends/get/requests').then(res => {
+                setFriendRequests(res.data.data.friendRequests)
+            })
         })
 
         router.refresh()
@@ -59,12 +65,19 @@ const FriendRequests: FC<FriendRequestsProps> = ({
         setIsLoading(true)
         !isLoading && await axios.post('/api/friends/delete', { id: senderId }).then(res => {
             setIsLoading(false)
-            window.location.reload()
+            axios.get('/api/friends/get/requests').then(res => {
+                setFriendRequests(res.data.data.friendRequests)
+            })
+        }).catch((err: any) => {
+            setIsLoading(false)
+            toast.error((err.response.data.message ? err.response.data.message : 'Something went wrong'))
+            axios.get('/api/friends/get/requests').then(res => {
+                setFriendRequests(res.data.data.friendRequests)
+            })
         })
         setFriendRequests((prev) =>
             prev.filter((request) => request.id !== senderId)
         )
-
         router.refresh()
     }
     return (

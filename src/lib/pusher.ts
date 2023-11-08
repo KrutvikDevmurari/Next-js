@@ -19,7 +19,7 @@ export const pusherClient = new PusherClient(
         },
         channelAuthorization: {
             transport: 'ajax',
-            endpoint: '/api/pusher/auth'
+            endpoint: '/api/pusher/auth',
         }
 
     },

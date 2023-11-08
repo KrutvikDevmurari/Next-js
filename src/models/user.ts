@@ -9,7 +9,6 @@ const UserSchema = new mongoose.Schema({
     requests: [
         {
             userId: { type: String, required: true },
-            userApproved: { type: Boolean, default: false },
         },
     ],
     group: [
@@ -25,6 +24,7 @@ const UserSchema = new mongoose.Schema({
     friends: [
         {
             userId: { type: String, required: true },
+            issActive: { type: Boolean, require: true }
         },
     ],
     status: [

@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast'
 import Image from 'next/image'
 import UnseenChatToast from './UnseenChatToast'
 import { Circle, Loader2, UserMinus } from 'lucide-react'
-import { signIn } from 'next-auth/react'
+import { signIn, signOut } from 'next-auth/react'
 import axios from 'axios'
 import { StatusPreviewModal } from './StatusPreviewModal'
 import Link from 'next/link'
@@ -40,19 +40,37 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
         setModalIsOpen(false);
     };
 
+    const watchlistEventHandler = (event: any) => {
+        console.log(event, "ereveraer")
+        // event.user_ids
+        // event.name
+    };
     useEffect(() => {
         pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`))
         pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
-        pusherClient.subscribe(toPusherKey(`user:unfriend`))
+        pusherClient.subscribe(toPusherKey(`user:${sessionId}:unfriend`))
+        pusherClient.user.watchlist.bind('online', watchlistEventHandler);
+        pusherClient.user.watchlist.bind('offline', watchlistEventHandler);
         pusherClient.subscribe(
             toPusherKey(`user:${sessionId}:confirm_friend_requests`)
         )
+        const newFriendHandler = async (newFriend: any) => {
+            if (sessionId !== newFriend.FriendData?._id) {
+                setActiveChats((prev: any) => [...prev, newFriend.FriendData])
+            } else {
+                setActiveChats((prev: any) => [...prev, newFriend.currentuserData])
+                axios.get('/api/friends/get/friends').then(res => {
+                    setActiveChats(res.data.data.friends)
+                })
 
-        const newFriendHandler = (newFriend: User) => {
-            setActiveChats((prev: any) => [...prev, newFriend])
+
+            }
         }
         const unFriendHandler = (newFriend: User) => {
             setActiveChats((prev: any) => [...prev, newFriend])
+            axios.get('/api/friends/get/friends').then(res => {
+                setActiveChats(res.data.data.friends)
+            })
         }
 
         const chatHandler = (message: ExtendedMessage) => {
@@ -78,24 +96,21 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
                 setUnseenMessages((prev) => [...prev, message]);
             }
         };
-
-
-
         pusherClient.bind('new_message', chatHandler)
-        // pusherClient.bind('new_friend', newFriendHandler)
+        pusherClient.bind('new_friend', newFriendHandler)
         pusherClient.bind('un_friend', unFriendHandler)
         pusherClient.bind('confirm_friend_requests', newFriendHandler)
 
-        return () => {
-            pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`))
-            pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`))
+        // return () => {
+        //     pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`))
+        //     pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`))
 
-            pusherClient.unbind('new_message', chatHandler)
-            pusherClient.unbind('new_friend', newFriendHandler)
-            pusherClient.unbind('un_friend', unFriendHandler)
-            pusherClient.unbind('confirm_friend_requests', newFriendHandler)
-        }
-    }, [pathname, sessionId, router, signIn])
+        //     pusherClient.unbind('new_message', chatHandler)
+        //     pusherClient.unbind('new_friend', newFriendHandler)
+        //     pusherClient.unbind('un_friend', unFriendHandler)
+        //     pusherClient.unbind('confirm_friend_requests', newFriendHandler)
+        // }
+    }, [signIn, signOut])
 
     useEffect(() => {
         if (pathname?.includes('chat')) {
@@ -151,13 +166,13 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
         //     return;
         // }
     }
+
     return (
         <ul role='list' className='max-h-[25rem] overflow-y-auto -mx-2 space-y-1'>
             {activeChats && activeChats.sort().map((friend: any) => {
                 const unseenMessagesCount = unseenMessages.filter((unseenMsg) => {
                     return unseenMsg.senderId === friend._id
                 }).length
-                console.log(friend.status, "friend")
                 return (
                     <>
                         {friend !== null ? <li key={friend._id}>

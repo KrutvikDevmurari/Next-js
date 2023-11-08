@@ -30,12 +30,12 @@ export const CreateGrouptController = async (req: Request) => {
             return NextResponse.json({ error: { message: "Can't create a group without friends" } }, { status: 400 });
         }
 
-        const originalFileName = uuidv4() + (file ? file.name : ''); // Generate a unique filename if a file is provided
+        const originalFileName = uuidv4() + (file ? file.name : '');
         const filePath = path.join(uploadDir, originalFileName);
 
         if (file && file.name) {
             if (!file.name.includes("http")) {
-                if (file.type.includes("jpg") || file.type.includes("png")) {
+                if (file.type.includes("jpeg") || file.type.includes("png")) {
                     const fileBuffer = await file.arrayBuffer();
                     const fileData = Buffer.from(fileBuffer);
                     await fs.writeFile(filePath, fileData);

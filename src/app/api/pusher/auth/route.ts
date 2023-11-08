@@ -16,14 +16,14 @@ export async function POST(req: NextRequest, res: any) {
             user_info: {
                 name: session.user.name,
             },
-            // watchlist: ['another_id_1', 'another_id_2']
+            watchlist: ['another_id_1', 'another_id_2']
         };
         const userData = {
             user_id: session.user.id.toString(),
             user_info: {
                 name: session.user.name,
             },
-            // watchlist: ['another_id_1', 'another_id_2']
+            watchlist: []
         };
         const authResponse = pusherServer.authenticateUser(socketId as string, user);
         const authChannel = pusherServer.authorizeChannel(socketId as string, channelName as string, userData);

@@ -1,9 +1,13 @@
 'use client'
 import { pusherClient } from '@/lib/pusher'
 import { toPusherKey } from '@/lib/utils'
+import axios from 'axios'
 import { User } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
+import { signIn } from 'next-auth/react'
 
 interface FriendRequestSidebarOptionsProps {
     sessionId: string
@@ -18,32 +22,55 @@ const FriendRequestSidebarOptions: FC<FriendRequestSidebarOptionsProps> = ({
         initialUnseenRequestCount
     )
 
+    const newFriendHandler = (newFriend: User) => {
+        setUnseenRequestCount((prev) => prev - 1)
+        axios.get('/api/friends/get/requests').then(res => {
+            setUnseenRequestCount(res.data.data.friendRequests.length)
+        })
+    }
+    const pathname = usePathname()
+    const router = useRouter()
     useEffect(() => {
         pusherClient.subscribe(
             toPusherKey(`user:${sessionId}:incoming_friend_requests`)
+        )
+        pusherClient.subscribe(
+            toPusherKey(`confirm_friend_requests2`)
         )
         pusherClient.subscribe(toPusherKey(`user:friends`))
 
         const friendRequestHandler = () => {
             setUnseenRequestCount((prev) => prev + 1)
+            axios.get('/api/friends/get/requests').then(res => {
+                setUnseenRequestCount(res.data.data.friendRequests.length)
+            })
         }
         const addedFriendHandler = () => {
             setUnseenRequestCount((prev) => prev - 1)
+            axios.get('/api/friends/get/requests').then(res => {
+                setUnseenRequestCount(res.data.data.friendRequests.length)
+            })
         }
 
         pusherClient.bind('incoming_friend_requests', friendRequestHandler)
-        pusherClient.bind('new_friend', addedFriendHandler)
+        // pusherClient.bind('new_friend', addedFriendHandler)
 
+        pusherClient.bind('confirm_friend_requests', newFriendHandler)
         return () => {
             pusherClient.unsubscribe(
                 toPusherKey(`user:${sessionId}:incoming_friend_requests`)
             )
+            pusherClient.unsubscribe(
+                toPusherKey(`confirm_friend_requests2`)
+            )
             pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`))
-
-            pusherClient.unbind('new_friend', addedFriendHandler)
+            pusherClient.unbind('confirm_friend_requests', newFriendHandler)
             pusherClient.unbind('incoming_friend_requests', friendRequestHandler)
         }
-    }, [sessionId])
+    }, [sessionId, pathname, router, signIn])
+
+
+
 
     return (
         <Link

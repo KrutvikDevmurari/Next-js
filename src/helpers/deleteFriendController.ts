@@ -17,7 +17,7 @@ export const deleteFriendRequestController = async (req: Request) => {
         } else {
             const userID = await session.user.id
             const removerequest = await removeUserFriendRequest(userID, id)
-            pusherServer.trigger(toPusherKey(`user:${session.user.id}:friends`), `new_friend`, "")
+            pusherServer.trigger(toPusherKey(`user:${session.user.id}:unfriend`), `new_friend`, "")
             return NextResponse.json({ message: 'Friend request Rejected', success: true }, { status: 200 });
         }
     } catch (error) {

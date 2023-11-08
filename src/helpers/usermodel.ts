@@ -71,7 +71,7 @@ export const getUserfromSession = async (session: any) => {
         const friendsdata = await Promise.all(friends.map(async (res: any) => {
             const id = res.userId;
             try {
-                const user = await User.findOne({ _id: id }).select('email name _id image status');
+                const user = await User.findOne({ _id: id }).select('email name _id image status isOnline');
                 return user;
             } catch (error) {
                 return error; // or handle the error in an appropriate way
@@ -212,7 +212,7 @@ export const removeUserFriendRequest = async (userId: String, friendId: String) 
     try {
         const result = await User.updateOne(
             { "_id": userId },
-            { $pull: { requests: { userId: friendId, userApproved: false } } }
+            { $pull: { requests: { userId: friendId } } }
         );
         return result;
     } catch (error) {

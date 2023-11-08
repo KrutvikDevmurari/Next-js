@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast'
 import Button from './Button'
 import { redirect } from 'next/navigation'
 import { useRouter } from 'next/navigation';
+import axios from 'axios'
 
 interface SignOutButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> { }
 
@@ -20,6 +21,9 @@ const SignOutButton: FC<SignOutButtonProps> = ({ ...props }) => {
             onClick={async () => {
                 setIsSigningOut(true)
                 try {
+                    await axios.post('/api/user/offline').then(res => {
+                        console.log("log out sucessfull")
+                    });
                     router.push("/")
                     await signOut({ redirect: false, callbackUrl: 'http://localhost:3000/' })
                     redirect('/signout')
